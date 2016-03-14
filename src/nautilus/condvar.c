@@ -237,7 +237,7 @@ test3 (void * in, void ** out)
     free(c);
 }
 
-
+/*
 void 
 nk_condvar_test (void)
 {
@@ -254,6 +254,6 @@ nk_condvar_test (void)
     nk_thread_start(test2, c, NULL, 1, TSTACK_DEFAULT, NULL, 2);
     nk_thread_start(test3, c, NULL, 1, TSTACK_DEFAULT, NULL, 3);
 
-}
+}*/
 
 

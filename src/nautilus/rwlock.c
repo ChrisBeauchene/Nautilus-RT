@@ -176,7 +176,7 @@ writer (void * in, void ** out)
     nk_rwlock_wr_unlock_irq_restore(rl, flags);
 }
 
-
+/*
 void
 nk_rwlock_test (void) 
 {
@@ -194,4 +194,5 @@ nk_rwlock_test (void)
     nk_thread_start(writer, rl, NULL, 1, TSTACK_DEFAULT, NULL, 3);
 
 }
+*/
 

@@ -484,6 +484,7 @@ thread_setup_init_stack (nk_thread_t * t, nk_thread_fun_t fun, void * arg)
  * return: on error returns -EINVAL, returns 0 on success
  *
  */
+
 int
 nk_thread_create (nk_thread_fun_t fun, 
                   void * input,
@@ -578,6 +579,8 @@ out_err1:
  *
  * on error, returns -EINVAL, otherwise 0
  */
+
+#ifndef NAUT_CONFIG_USE_RT_SCHEDULER
 int
 nk_thread_start (nk_thread_fun_t fun, 
                  void * input,
@@ -586,6 +589,20 @@ nk_thread_start (nk_thread_fun_t fun,
                  nk_stack_size_t stack_size,
                  nk_thread_id_t * tid,
                  int cpu)
+#else
+int
+nk_thread_start (nk_thread_fun_t fun,
+		void *input,
+		void **output,
+		uint8_t is_detached,
+		nk_stack_size_t stack_size,
+		nk_thread_id_t *tid,
+		int cpu,
+		int rt_type,
+                rt_constraints *rt_constraints,
+                uint64_t rt_deadline)
+		
+#endif
 {
     nk_thread_id_t newtid   = NULL;
     nk_thread_t * newthread = NULL;
@@ -607,8 +624,30 @@ nk_thread_start (nk_thread_fun_t fun,
     }
 
     thread_setup_init_stack(newthread, fun, input);
+#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
+	rt_thread *rt = rt_thread_init(rt_type, rt_constraints, rt_deadline, newthread);
+	struct sys_info *sys = per_cpu_get(system);
+	if (sys->cpus[cpu]->rt_sched)
+        {	
+		if (rt_admit(sys->cpus[cpu]->rt_sched, rt))
+		{
+			if (rt_type == PERIODIC || rt_type == SPORADIC)
+			{
+				enqueue_thread(sys->cpus[cpu]->rt_sched->runnable, rt);
+			}
+			else 
+			{
+				enqueue_thread(sys->cpus[cpu]->rt_sched->aperiodic, rt);
+			}
+		} else
+		{
+			RT_THREAD_DEBUG("FAILED TO START THREAD. ADMISSION CONTROL DENYING ENTRY.\n")
+		}
+	}
+#endif
+	nk_enqueue_thread_on_runq(newthread, cpu);
 
-    nk_enqueue_thread_on_runq(newthread, cpu);
+    
 
 #ifdef NAUT_CONFIG_DEBUG_THREADS
     if (cpu == CPU_ANY) {
@@ -714,7 +753,7 @@ nk_thread_destroy (nk_thread_id_t t)
 
     /* remove it from any wait queues */
     nk_dequeue_entry(&(thethread->wait_node));
-
+	
     /* remove its own wait queue 
      * (waiters should already have been notified */
     nk_thread_queue_destroy(thethread->waitq);
@@ -738,6 +777,7 @@ nk_thread_destroy (nk_thread_id_t t)
  */
 int
 nk_join (nk_thread_id_t t, void ** retval)
+#ifndef NAUT_CONFIG_USE_RT_SCHEDULER
 {
     nk_thread_t *thethread = (nk_thread_t*)t;
     uint8_t flags;
@@ -773,6 +813,11 @@ out:
     irq_enable_restore(flags);
     return 0;
 }
+#else
+{
+	return 0;
+}
+#endif
 
 
 /* 
@@ -829,6 +874,7 @@ nk_join_all_children (int (*func)(void * res))
  */
 void
 nk_wait (nk_thread_id_t t)
+#ifndef NAUT_CONFIG_USE_RT_SCHEDULER
 {
     nk_thread_t * cur    = get_cur_thread();
     nk_thread_t * waiton = (nk_thread_t*)t;
@@ -843,6 +889,9 @@ nk_wait (nk_thread_id_t t)
     enqueue_thread_on_waitq(cur, wq);
     nk_schedule();
 }
+#else
+{}
+#endif
 
 
 /*
@@ -854,11 +903,11 @@ nk_wait (nk_thread_id_t t)
  */
 void 
 nk_yield (void)
+#ifndef NAUT_CONFIG_USE_RT_SCHEDULER
 {
     nk_thread_t * runme = NULL;
     nk_thread_t * me    = get_cur_thread();
     uint8_t flags       = irq_disable_save();
-
     if (nk_queue_empty(per_cpu_get(run_q))) {
         return;
     }
@@ -867,7 +916,6 @@ nk_yield (void)
     if ((runme = get_runnable_thread_myq())) {
 
         nk_enqueue_thread_on_runq(me, me->bound_cpu);
-
 #ifdef NAUT_CONFIG_ENABLE_STACK_CHECK
         if (me->rsp <= (uint64_t)(me->stack)) {
             panic("This thread (%p, tid=%u) has run off the end of its stack! (start=%p, rsp=%p, start size=%lx)\n", 
@@ -878,13 +926,16 @@ nk_yield (void)
                     me->stack_size);
         }
 #endif /* !NAUT_CONFIG_ENABLE_STACK_CHECK */
-
         nk_thread_switch(runme);
 
     }
-
     irq_enable_restore(flags);
 }
+#else
+{
+	nk_schedule();
+}
+#endif
 
 
 /* 
@@ -1267,7 +1318,8 @@ __thread_fork (void)
 
 
 nk_thread_t*
-nk_need_resched (void) 
+nk_need_resched (void)
+#ifndef NAUT_CONFIG_USE_RT_SCHEDULER 
 {
     nk_thread_t * p;
     nk_thread_t * c;
@@ -1284,6 +1336,11 @@ nk_need_resched (void)
 
     return p;
 }
+#else
+{	ASSERT(!irqs_enabled());
+	return rt_need_resched();
+}
+#endif
 
 
 /* 
@@ -1293,7 +1350,8 @@ nk_need_resched (void)
  *
  */
 void
-nk_schedule (void) 
+nk_schedule (void)
+#ifndef NAUT_CONFIG_USE_RT_SCHEDULER 
 {
     nk_thread_t * runme = NULL;
 
@@ -1327,6 +1385,22 @@ nk_schedule (void)
 
     nk_thread_switch(runme);
 }
+#else
+{
+	uint8_t flags = irq_disable_save();
+	nk_thread_t *runme = nk_need_resched();
+	if (!runme)
+	{
+		RT_THREAD_DEBUG("WE CAN PUT LOW POWER SAVING MODE HERE");
+		panic("NO THREAD TO SWITCH TO");
+	}
+	else 
+	{
+		nk_thread_switch(runme);
+		irq_enable_restore(flags);
+	}	
+}
+#endif
 
 
 /*
@@ -1389,9 +1463,12 @@ nk_sched_init_ap (void)
     put_cur_thread(me);
 
     enqueue_thread_on_tlist(me);
+#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
+	my_cpu->rt_sched = rt_scheduler_init();
+#endif
 
     // start another idle thread
-#ifdef NAUT_CONFIG_USE_IDLE_THREADS
+#if defined(NAUT_CONFIG_USE_IDLE_THREADS) && !defined(NAUT_CONFIG_USE_RT_SCHEDULER)
     SCHED_DEBUG("Starting idle thread for cpu %d\n", id);
     nk_thread_start(idle, NULL, NULL, 0, TSTACK_DEFAULT, NULL, id);
 #endif
@@ -1479,9 +1556,12 @@ nk_sched_init (void)
     put_cur_thread(main);
 
     enqueue_thread_on_tlist(main);
+#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
+	my_cpu->rt_sched = rt_scheduler_init();
+#endif
 
-#ifdef NAUT_CONFIG_USE_IDLE_THREADS
-    // the idle thread
+#if defined(NAUT_CONFIG_USE_IDLE_THREADS) && !defined(NAUT_CONFIG_USE_RT_SCHEDULER)
+    SCHED_DEBUG("Starting idle thread for cpu %d\n", my_cpu->id);
     nk_thread_start(idle, NULL, NULL, 0, TSTACK_DEFAULT, NULL, my_cpu->id);
 #endif
 
@@ -1561,12 +1641,13 @@ out_err:
     free(keys);
 }
 
-
+/*
 void 
 nk_tls_test (void)
 {
     nk_thread_start(tls_dummy, NULL, NULL, 1, TSTACK_DEFAULT, NULL, 1);
 }
+*/
 
 
 

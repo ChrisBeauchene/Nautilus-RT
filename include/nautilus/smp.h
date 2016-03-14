@@ -43,6 +43,9 @@ uint8_t nk_get_cpu_by_lapicid (uint8_t lapicid);
 #include <nautilus/spinlock.h>
 #include <nautilus/mm.h>
 #include <nautilus/queue.h>
+//#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
+//#include <nautilus/rt_scheduler.h>
+//#endif
 
 struct naut_info;
 struct nk_topo_params;
@@ -50,6 +53,10 @@ struct nk_cpu_coords;
 
 struct nk_queue;
 struct nk_thread;
+#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
+struct rt_scheduler;
+typedef struct rt_scheduler rt_scheduler;
+#endif
 
 //typedef struct nk_queue nk_thread_queue_t;
 //typedef struct nk_thread nk_thread_t;
@@ -72,7 +79,6 @@ struct nk_xcall {
 
 struct cpu {
     struct nk_thread * cur_thread; /* KCH: this must be first! */
-
     cpu_id_t id;
     uint8_t lapic_id;
     uint8_t enabled;
@@ -108,6 +114,10 @@ struct cpu {
     /* temporary */
 #ifdef NAUT_CONFIG_PROFILE
     struct nk_instr_data * instr_data;
+#endif
+
+#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
+    rt_scheduler *rt_sched;
 #endif
 };
 

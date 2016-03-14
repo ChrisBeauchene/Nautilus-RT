@@ -58,6 +58,10 @@
 #include "ndpc_preempt_threads.h"
 #endif
 
+#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
+#include <nautilus/rt_scheduler.h>
+#endif
+
 
 extern spinlock_t printk_lock;
 
@@ -168,17 +172,26 @@ static void test_thread(void *in)
 	printk("(%lx) woke up!\n", tid);
 }
 
+static void test_real_time(void *in)
+{
+	
+}
+
 void nk_rt_test()
 {
 	nk_thread_id_t r;
-	nk_thread_id_t s;
-	nk_thread_id_t t;
-	nk_thread_start((nk_thread_fun_t)test_thread, NULL, NULL, 0, 0, &r, 0);
-	nk_thread_start((nk_thread_fun_t)test_thread, NULL, NULL, 0, 0, &s, 0);
-	nk_thread_start((nk_thread_fun_t)test_thread, NULL, NULL, 0, 0, &t, 0);
+	//nk_thread_id_t s;
+	//nk_thread_id_t t;
+	rt_constraints *constraints = (rt_constraints *)malloc(sizeof(rt_constraints));
+	struct periodic_constraints per_constr = {5000 + (rand() % 100000), (rand() % 10000), 0, 40};
+	constraints->periodic = per_constr;
+	
+	nk_thread_start((nk_thread_fun_t)test_thread, NULL, NULL, 0, 0, &r, my_cpu_id(), PERIODIC, constraints, 0);
+	//nk_thread_start((nk_thread_fun_t)test_thread, NULL, NULL, 0, 0, &s, 0);
+	//nk_thread_start((nk_thread_fun_t)test_thread, NULL, NULL, 0, 0, &t, 0);
 	nk_join(r, NULL);
-	nk_join(s, NULL);
-	nk_join(t, NULL);
+	//nk_join(s, NULL);
+	//nk_join(t, NULL);
 }
 		
 
@@ -295,8 +308,10 @@ init (unsigned long mbd,
     sti();
 
     runtime_init();
+#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
 	printk("BEGIN TESTING THE REAL-TIME SCHEDULER\n");
 	nk_rt_test();
+#endif
     // printk("Nautilus boot thread yielding (indefinitely)\n");
     /* we don't come back from this */
     idle(NULL, NULL);

@@ -50,7 +50,11 @@ extern "C" {
 typedef void* nk_thread_id_t;
 typedef void (*nk_thread_fun_t)(void * input, void ** output);
 typedef uint64_t nk_stack_size_t;
-
+#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
+typedef struct rt_thread rt_thread;
+typedef struct rt_scheduler rt_scheduler;
+typedef union rt_constraints rt_constraints;
+#endif
 int
 nk_thread_create (nk_thread_fun_t fun, 
                  void * input,
@@ -59,6 +63,8 @@ nk_thread_create (nk_thread_fun_t fun,
                  nk_stack_size_t stack_size,
                  nk_thread_id_t * tid,
                  int cpu);
+
+#ifndef NAUT_CONFIG_USE_RT_SCHEDULER
 int
 nk_thread_start (nk_thread_fun_t fun, 
                  void * input,
@@ -67,7 +73,18 @@ nk_thread_start (nk_thread_fun_t fun,
                  nk_stack_size_t stack_size,
                  nk_thread_id_t * tid,
                  int cpu);
-
+#else
+int nk_thread_start(nk_thread_fun_t fun, 
+                    void * input,
+                    void ** output,
+                    uint8_t is_detached,
+                    nk_stack_size_t stack_size,
+                    nk_thread_id_t * tid,
+                    int cpu,
+		    int rt_type,
+		    rt_constraints *rt_constraints,
+		    uint64_t rt_deadline);
+#endif
 extern nk_thread_id_t nk_thread_fork(void);
 
 void nk_set_thread_fork_output(void * result);
@@ -154,7 +171,7 @@ struct nk_thread {
     uint8_t fpu_state[FXSAVE_SIZE] __align(16);
     
     #ifdef NAUT_CONFIG_USE_RT_SCHEDULER
-	 struct  nk_rt_t *rt_thread;
+	 rt_thread *rt_thread;
     #endif
 } __packed;
 

@@ -375,6 +375,7 @@ barrier_func2 (void * in, void ** out)
  * the machine
  *
  */
+/*
 void nk_barrier_test(void)
 {
     nk_barrier_t * b;
@@ -393,5 +394,5 @@ void nk_barrier_test(void)
     printk("Barrier test successful\n");
     nk_barrier_destroy(b);
     free(b);
-}
+}*/
 

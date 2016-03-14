@@ -42,24 +42,24 @@ struct aperiodic_constraints {
     uint64_t priority;
 };
 
-typedef union {
+typedef union rt_constraints {
     struct periodic_constraints     periodic;
     struct sporadic_constraints     sporadic;
     struct aperiodic_constraints    aperiodic;
-} rt_constraints_t;
+} rt_constraints;
 
-typedef struct nk_rt_t {
+typedef struct rt_thread {
     enum { APERIODIC = 0, SPORADIC = 1, PERIODIC = 2} type;
     enum { CREATED = 0, ADMITTED = 1, RUNNING = 2} status;
-    rt_constraints_t *constraints;
+    rt_constraints *constraints;
     uint64_t start_time; // when we last started this thread
     uint64_t run_time;   // how  long it's been running in its current period
     uint64_t deadline;   // deadline for current period
     struct nk_thread *thread;
-} nk_rt_t;
+} rt_thread;
 
-nk_rt_t * nk_rt_init(int type,
-                     rt_constraints_t *constraints,
+rt_thread* rt_thread_init(int type,
+                     rt_constraints *constraints,
                      uint64_t deadline,
                      struct nk_thread *thread
                      );
@@ -77,34 +77,33 @@ typedef enum {RUNNABLE_QUEUE = 0, PENDING_QUEUE = 1, APERIODIC_QUEUE = 2} queue_
 typedef struct rt_queue {
     queue_type type;
     uint64_t size;
-    nk_rt_t *threads[0];
-} rt_queue_t ;
+    rt_thread *threads[0];
+} rt_queue ;
 
 typedef struct rt_scheduler {
     
     // RUN QUEUE
         // The queue of runnable threads
         // Priority min queue
-    rt_queue_t *runnable;
+    rt_queue *runnable;
     
     // PENDING QUEUE
         // The queue of threads waiting for their arrival time
-    rt_queue_t *pending;
+    rt_queue *pending;
     
     // APERIODIC QUEUE
     // The queue of threads that are aperiodic (least important)
-    rt_queue_t *aperiodic;
+    rt_queue *aperiodic;
 
-} rt_scheduler_t;
+} rt_scheduler;
 
-rt_scheduler_t* rt_scheduler_init();
+rt_scheduler* rt_scheduler_init();
+struct nk_thread* rt_need_resched();
 
+void enqueue_thread(rt_queue *queue, rt_thread *thread);
+rt_thread* dequeue_thread(rt_queue *queue);
 
-void enqueue_thread(rt_queue_t *queue, nk_rt_t *thread);
-nk_rt_t* dequeue_thread(rt_queue_t *queue);
-
-void print_rt(nk_rt_t *thread);
-void print_nk(nk_rt_t *thread);
+void rt_thread_dump(rt_thread *thread);
 
 // Time
 uint64_t cur_time();
@@ -115,6 +114,6 @@ nk_thread_t * nk_rt_need_resched();
 
 /* ADMISSION CONTROL */
 
-int rt_admit(rt_scheduler_t *scheduler, nk_rt_t *thread);
+int rt_admit(rt_scheduler *scheduler, rt_thread *thread);
 
 #endif /* rt_scheduler_h */

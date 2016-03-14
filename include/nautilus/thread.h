@@ -154,7 +154,7 @@ struct nk_thread {
     uint8_t fpu_state[FXSAVE_SIZE] __align(16);
     
     #ifdef NAUT_CONFIG_USE_RT_SCHEDULER
-	   nk_rt_t *rt_thread;
+	 struct  nk_rt_t *rt_thread;
     #endif
 } __packed;
 

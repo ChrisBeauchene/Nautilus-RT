@@ -6,37 +6,42 @@
 //  Copyright © 2016 EECS 395/495 Kernel Development. All rights reserved.
 //
 
-// #include <nautilus/nautilus.h>
-// #include <nautilus/thread.h>
-// #include <nautilus/rt_scheduler.h>
-// #include <nautilus/irq.h>
-
-#include <nautilus/rt_scheduler.h>
+#include <nautilus/nautilus.h>
 #include <nautilus/thread.h>
+#include <nautilus/rt_scheduler.h>
+#include <nautilus/irq.h>
+#include <nautilus/cpu.h>
+#include <dev/apic.h>
+#include <dev/timer.h>
 
 
-#define DEBUG 1
-#define DEBUG_ADMIT 1
+#define INFO(fmt, args...) printk("RT SCHED: " fmt, ##args)
+#define RT_SCHED_PRINT(fmt, args...) printk("RT SCHED: " fmt, ##args)
+#define RT_SCHED_ERROR(fmt, args...) printk("RT SCHED ERROR: " fmt, ##args)
 
-//#define INFO(fmt, args...) printk("RT SCHED: " fmt, ##args)
-//#define RT_SCHED_PRINT(fmt, args...) printk("RT SCHED: " fmt, ##args)
-//#if DEBUG
-//#define RT_SCHED_DEBUG(fmt, args...) DEBUG_PRINT("RT SCHED DEBUG: " fmt, ##args)
-//#else
-//#define RT_SCHED_DEBUG(fmt, args...)
-//#endif
-//#define RT_SCHED_ERROR(fmt, args...) printk("RT SCHED ERROR: " fmt, ##args)
-
+#define RT_SCHED_DEBUG(fmt, args...)
+#ifdef NAUT_CONFIG_DEBUG_RT_SCHEDULER
+#undef RT_SCHED_DEBUG
+#define RT_SCHED_DEBUG(fmt, args...) RT_DEBUG_PRINT("SCHED: " fmt, ##args)
+#endif
 
 #define parent(i) ((i) ? (((i) - 1) >> 1) : 0)
 #define left_child(i) (((i) << 1) + 1)
 #define right_child(i) (((i) << 1) + 2)
+#ifndef MIN
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#endif
 
 // Thread definitions
 // Types
 #define APERIODIC 0
 #define SPORADIC 1
 #define PERIODIC 2
+
+// UTILIZATION FACTOR LIMITS
+#define PERIODIC_UTIL 0.7
+#define SPORADIC_UTIL 0.2
+#define APERIODIC_UTIL 0.1
 
 // Statuses
 #define CREATED 0
@@ -48,9 +53,6 @@
 #define PENDING_QUEUE 1
 #define APERIODIC_QUEUE 2
 #define MAX_QUEUE 256
-
-// Timing definition
-#define NAUT_CONFIG_HZ 10
 
 // Switching thread functions
 static inline void nk_rt_update_exit(nk_rt_t *n);
@@ -72,81 +74,10 @@ static inline double sporadic_utilization_factor(rt_queue_t *runnable);
 
 // SCHEDULE FUNCTIONS
 
-// New job, arrival queues, run queues, current job all need to be taken into account when we do the utilization factors
-// Fire the timer min(arrival queue min, completion of the current job,
-
-
-/*
- 
- three queues - both min priority queues
- 
- Run queue - ordered by deadline time
- Pending queue - ordered by arrival
- Aperiodic queue - queue of aperiodic jobs to be run, sorted by order sent in?
- 
- TIMER:
- 
- Real-Time:
- Set timer() {
- timeout = min(PQ[0], now + job->work - job->run_time)
- }
- Non real-time:
- Set timer() {
- timeout = min(dequeue(PQ), now + quantum)
- }
- 
- Events:
- Functions:
-    Admit_job();
- Set timer
- 
- Yield()
- Take current thread off the CPU and enqueue onto the RQ
- Dequeue RQ (Update new thread to be run)
- Set timer
- 
- Timer interrupts:
- Job Arrived (job->arrival <= cur_time()):
- Dequeue PQ
- Enqueue in RQ
- If jobs[0]->deadline < job->deadline:
- We want to switch the job
- Set timer
- 
- Periodic Job Completed(job->run_time >= job->slice):
- Update job with new arrival and deadline
- Enqueue into pending queue
- Change the state of the current thread
- Get next runnable job {
- If there is a job to switch to:
- Dequeue the run queue to the current thread
- Else:
- Switch to aperiodic job
- }
- Set timer
- 
- Sporadic Job Completed:
- Take job off of CPU
- Get next runnable job
- Set timer
- 
- Aperiodic Job 'Completed':
- (Acquires on a fire from the timer signifying that the job has used
- up its alloted 'quantum' time.)
- Take job off of CPU
- Enqueue onto APERIODIC queue
- Get next runnable job
- Set timer
- */
-
-
-// Initialize the real-time thread
-// We will use the constraaints accordingly to the the type that we have
-
 nk_rt_t * nk_rt_init(int type,
                      rt_constraints_t *constraints,
                      uint64_t deadline,
-                     nk_thread_t *thread
+                     struct nk_thread *thread
                      )
 {
     nk_rt_t *rt_thread = (nk_rt_t *)malloc(sizeof(nk_rt_t));
@@ -172,23 +103,13 @@ nk_rt_t * nk_rt_init(int type,
 // Called inside of nk_sched_init if NAUT_CONFIG_USE_RT_SCHEDULER is set to true
 rt_scheduler_t* rt_scheduler_init()
 {
-    // Disable the interrupts and save the flags
-    // Do we need to do this because we are being called inside of nk_sched_init() which always disables the interrupts?
-    // int flags;
-    // flags = irq_disable_save();
-    
-    // RT_SCHED_PRINT("Initializing rt scheduler\n");
-    
-    // Allocate space for the scheduler and the three queues associated with it
-        // May not need necessarily 3 times as much space maybe 2.25 (why need max queue size for aperiodic?)
     rt_scheduler_t* scheduler = (rt_scheduler_t *)malloc(sizeof(rt_scheduler_t));
     rt_queue_t *runnable = (rt_queue_t *)malloc(sizeof(rt_queue_t) + MAX_QUEUE * sizeof(nk_rt_t *));
     rt_queue_t *pending = (rt_queue_t *)malloc(sizeof(rt_queue_t) + MAX_QUEUE * sizeof(nk_rt_t *));
     rt_queue_t *aperiodic = (rt_queue_t *)malloc(sizeof(rt_queue_t) + MAX_QUEUE * sizeof(nk_rt_t *));
     
     if (!scheduler || !runnable || ! pending || !aperiodic) {
-        printf("COULDN'T ALLOCATE SCHEDULER");
-        // RT_SCHED_ERROR("Could not allocate rt scheduler\n");
+        RT_SCHED_ERROR("Could not allocate rt scheduler\n");
         return NULL;
     } else {
         runnable->type = RUNNABLE_QUEUE;
@@ -203,25 +124,15 @@ rt_scheduler_t* rt_scheduler_init()
         aperiodic->size = 0;
         scheduler->aperiodic = aperiodic;
     }
-    // irq_enable_restore(flags);
     return scheduler;
 }
 
 
 void enqueue_thread(rt_queue_t *queue, nk_rt_t *thread)
 {
-    // printf("The current cycle count is: %llu\n", cur_time());
     // CHECK IF JOB IS PERIODIC OR SPORADIC AND DO ADMISSION CONTROL HERE
         // IF THE ADMISSION CONTROL RETURNS FALSE THEN WE WANT JUST RETURN
         // OUT OF THIS FUNCTION
-    /******************************
-     *******************************
-     
-     Admission Control Goes Here
-     
-     *******************************
-     ******************************/
-    
     
     // 1. RUN QUEUE  - DEADLINE DETERMINED POSITION IN QUEUE
     // 2. PENDING QUEUE - ARRIVAL DETERMINED POSITION IN QUEUE
@@ -232,8 +143,7 @@ void enqueue_thread(rt_queue_t *queue, nk_rt_t *thread)
     {
         if (queue->size == MAX_QUEUE)
         {
-            printf("RUN QUEUE IS FULL");
-            // RT_SCHED_DEBUG("RUN QUEUE IS FULL!");
+            RT_SCHED_DEBUG("RUN QUEUE IS FULL!");
             return;
         }
         
@@ -241,7 +151,7 @@ void enqueue_thread(rt_queue_t *queue, nk_rt_t *thread)
         queue->threads[pos] = thread;
         while (queue->threads[parent(pos)]->deadline > thread->deadline && pos != parent(pos))
         {
-            // RT_SCHED_DEBUG("pos is %llu\t\t parent pos is %llu\n", pos, parent(pos));
+            RT_SCHED_DEBUG("pos is %llu\t\t parent pos is %llu\n", pos, parent(pos));
             queue->threads[pos] = queue->threads[parent(pos)];
             pos = parent(pos);
         }
@@ -260,8 +170,7 @@ void enqueue_thread(rt_queue_t *queue, nk_rt_t *thread)
     {
         if (queue->size == MAX_QUEUE)
         {
-            printf("PENDING QUEUE IS FULL");
-            // RT_SCHED_DEBUG("PENDING QUEUE IS FULL!");
+            RT_SCHED_DEBUG("PENDING QUEUE IS FULL!");
             return;
         }
         
@@ -269,7 +178,7 @@ void enqueue_thread(rt_queue_t *queue, nk_rt_t *thread)
         queue->threads[pos] = thread;
         while (queue->threads[parent(pos)]->deadline > thread->deadline && pos != parent(pos))
         {
-            // RT_SCHED_DEBUG("pos is %llu\t\t parent pos is %llu\n", pos, parent(pos));
+            RT_SCHED_DEBUG("pos is %llu\t\t parent pos is %llu\n", pos, parent(pos));
             queue->threads[pos] = queue->threads[parent(pos)];
             pos = parent(pos);
         }
@@ -279,8 +188,7 @@ void enqueue_thread(rt_queue_t *queue, nk_rt_t *thread)
     {
         if (queue->size == MAX_QUEUE)
         {
-            printf("APERIODIC QUEUE FULL!");
-            // RT_SCHED_DEBUG("APERIODIC QUEUE IS FULL!");
+            RT_SCHED_DEBUG("APERIODIC QUEUE IS FULL!");
             return;
         }
         
@@ -288,7 +196,7 @@ void enqueue_thread(rt_queue_t *queue, nk_rt_t *thread)
         queue->threads[pos] = thread;
         while (queue->threads[parent(pos)]->constraints->aperiodic.priority > thread->constraints->aperiodic.priority && pos != parent(pos))
         {
-            // RT_SCHED_DEBUG("pos is %llu\t\t parent pos is %llu\n", pos, parent(pos));
+            RT_SCHED_DEBUG("pos is %llu\t\t parent pos is %llu\n", pos, parent(pos));
             queue->threads[pos] = queue->threads[parent(pos)];
             pos = parent(pos);
         }
@@ -307,8 +215,7 @@ nk_rt_t* dequeue_thread(rt_queue_t *queue)
     {
         if (queue->size < 1)
         {
-            printf("RUN QUEUE EMPTY");
-            // RT_SCHED_DEBUG("RUNNABLE QUEUE EMPTY! CAN'T DEQUEUE!\n");
+            RT_SCHED_DEBUG("RUNNABLE QUEUE EMPTY! CAN'T DEQUEUE!\n");
             return NULL;
         }
 
@@ -345,8 +252,7 @@ nk_rt_t* dequeue_thread(rt_queue_t *queue)
     {
         if (queue->size < 1)
         {
-            printf("PENDING QUEUE EMPTY");
-            // RT_SCHED_DEBUG("PENDING QUEUE EMPTY! CAN'T DEQUEUE!\n");
+            RT_SCHED_DEBUG("PENDING QUEUE EMPTY! CAN'T DEQUEUE!\n");
             return NULL;
         }
         nk_rt_t *min, *last;
@@ -380,8 +286,7 @@ nk_rt_t* dequeue_thread(rt_queue_t *queue)
     {
         if (queue->size < 1)
         {
-            printf("APERIODIC QUEUE EMPTY");
-            // RT_SCHED_DEBUG("APERIODIC QUEUE EMPTY! CAN'T DEQUEUE!\n");
+            RT_SCHED_DEBUG("APERIODIC QUEUE EMPTY! CAN'T DEQUEUE!\n");
             return NULL;
         }
         nk_rt_t *min, *last;
@@ -416,21 +321,14 @@ nk_rt_t* dequeue_thread(rt_queue_t *queue)
 void print_rt(nk_rt_t *thread)
 {
     
-    // printf("Deadline: %llu\t\t", thread->deadline);
     if (thread->type == PERIODIC)
     {
-        printf("Slice: %llu\t\t Period: %llu\t\t\n", thread->constraints->periodic.slice, thread->constraints->periodic.period);
-        printf("Utilization contribution: %lfu\n\n", (double)thread->constraints->periodic.slice / thread->constraints->periodic.period);
+        RT_SCHED_DEBUG("Slice: %llu\t\t Period: %llu\t\t\n", thread->constraints->periodic.slice, thread->constraints->periodic.period);
+        RT_SCHED_DEBUG("Utilization contribution: %lfu\n\n", (double)thread->constraints->periodic.slice / thread->constraints->periodic.period);
     } else if (thread->type == SPORADIC)
     {
-        printf("Work: %llu\t\t", thread->constraints->sporadic.work);
+        RT_SCHED_DEBUG("Work: %llu\t\t", thread->constraints->sporadic.work);
     }
-    // RT_SCHED_DEBUG("Thread deadline: %llu\n", thread->deadline);
-}
-
-void print_nk(nk_rt_t *thread)
-{
-    //printf("Thread priority: %llu\n", thread->constraints->aperiodic.priority);
 }
 
 
@@ -442,20 +340,20 @@ void print_nk(nk_rt_t *thread)
 
 static void set_timer(rt_scheduler_t *scheduler, nk_rt_t *current_thread)
 {
-    // struct sys_info *sys = per_cpu_get(system);
-    // struct apic_dev *apic = sys->cpus[my_cpu_id()]->apic;
+    struct sys_info *sys = per_cpu_get(system);
+    struct apic_dev *apic = sys->cpus[my_cpu_id()]->apic;
     if (scheduler->pending->size > 0 && current_thread) {
-        // nk_rt_t *thread = scheduler->pending->threads[0];
-        // uint64_t completion_time = 0;
+        nk_rt_t *thread = scheduler->pending->threads[0];
+        uint64_t completion_time = 0;
         if (current_thread->type == PERIODIC)
         {
-            // apic_set(min(thread->deadline, cur_time() + (current_thread->constraints->periodic.slice - current_thread->run_time)));
+            apic_oneshot_write(apic, MIN(thread->deadline, cur_time() + (current_thread->constraints->periodic.slice - current_thread->run_time)));
         } else if (current_thread->type == SPORADIC)
         {
-            // apic_set(min(thread->deadline, cur_time() + (current_thread->constraints->sporadic.work - current_thread->run_time)));
+            apic_oneshot_write(apic, MIN(thread->deadline, cur_time() + (current_thread->constraints->sporadic.work - current_thread->run_time)));
         } else
         {
-            // apic_set(min(thread->deadline, cur_time() + 1000000 / NAUT_CONFIG_HZ));
+            apic_oneshot_write(apic, MIN(thread->deadline, cur_time() + 1000000 / NAUT_CONFIG_HZ));
         }
     } else {
         
@@ -463,16 +361,14 @@ static void set_timer(rt_scheduler_t *scheduler, nk_rt_t *current_thread)
         
 }
 
-nk_thread_t *nk_rt_need_resched(rt_scheduler_t *scheduler)
+struct nk_thread *nk_rt_need_resched(rt_scheduler_t *scheduler)
 {
 
-    nk_thread_t *c; // = get_cur_thread();
+    struct nk_thread *c = get_cur_thread();
     nk_rt_t *rt_c = c->rt_thread;
     nk_rt_t *rt_n;
     
     // REQUIRES NAUTILUS
-    // struct sys_info *sys = per_cpu_get(system);
-    // rt = sys->cpus[my_cpu_id()]->rt;
     
     // First we need to check to see if any new jobs have arrived
         // while current_time > PQ[0] we dequeue from the pending queue, update the period,
@@ -588,9 +484,8 @@ nk_thread_t *nk_rt_need_resched(rt_scheduler_t *scheduler)
                     return rt_n->thread;
                 } else
                 {
-                    printf("No threads to run. Idling.\n");
-                    return NULL;
-                    // ERROR("No jobs to switch to!\n");
+		    RT_SCHED_ERROR("No jobs to switch to!\n");
+                    return NULL; 
                 }
             } else {
                 if (scheduler->runnable->size > 0)
@@ -628,8 +523,7 @@ static inline void nk_rt_update_enter(nk_rt_t *n)
 static inline void check_deadlines(nk_rt_t *n)
 {
     if (cur_time() > n->deadline) {
-        printf("Missed deadline on task %p\n", n);
-        // ERROR("Missed deadline on task %p\n",n);
+        RT_SCHED_ERROR("Missed deadline on task %p\n",n);
     }
 }
 
@@ -647,12 +541,12 @@ uint64_t cur_time()
     return rdtsc();
 }
 
-static inline uint64_t rdtsc()
+/* static inline uint64_t rdtsc()
 {
     uint64_t ret;
     __asm__ volatile ( "rdtsc" : "=A"(ret) );
     return ret;
-}
+}*/
 
 int rt_admit(rt_scheduler_t *scheduler, nk_rt_t *thread)
 {
@@ -695,18 +589,18 @@ int rt_admit(rt_scheduler_t *scheduler, nk_rt_t *thread)
         double avg_per = (average_period(scheduler->runnable, scheduler->pending) / 2.0);
         double sched_util = avg_per ? ((double)sched_run_time / avg_per) : 0.0;
         double periodic_util = periodic_utilization_factor(scheduler->runnable, scheduler->pending) + sched_util;
-        printf("UTIL FACTOR =  \t%lf\n", periodic_util);
+        RT_SCHED_DEBUG("UTIL FACTOR =  \t%lf\n", periodic_util);
         
         
         if ((periodic_util + ((double)thread->constraints->periodic.slice / (double)thread->constraints->periodic.period)) > PERIODIC_UTIL) {
-            // printf("PERIODIC: Admission denied utilization factor overflow!\n");
+            RT_SCHED_DEBUG("PERIODIC: Admission denied utilization factor overflow!\n");
             return 0;
         }
         
         if ((thread->deadline - cur_time() - sched_run_time) <= thread->constraints->periodic.slice)
         {
            
-            printf("PERIODIC: Time to reach first deadline is unachievable.\n");
+            RT_SCHED_DEBUG("PERIODIC: Time to reach first deadline is unachievable.\n");
             return 0;
         }
     } else if (thread->type == SPORADIC)
@@ -714,7 +608,7 @@ int rt_admit(rt_scheduler_t *scheduler, nk_rt_t *thread)
         double sporadic_util = sporadic_utilization_factor(scheduler->runnable);
         if ((sporadic_util + (double)thread->constraints->sporadic.work / ((double)thread->deadline - (double)cur_time())) > SPORADIC_UTIL) {
             #if DEBUG_ADMIT
-                printf("SPORADIC: Admission denied utilization factor overflow!\n");
+                RT_SCHED_DEBUG("SPORADIC: Admission denied utilization factor overflow!\n");
             #endif
             return 0;
         }
@@ -722,7 +616,7 @@ int rt_admit(rt_scheduler_t *scheduler, nk_rt_t *thread)
         if ((thread->deadline - cur_time() - sched_run_time) <= thread->constraints->sporadic.work)
         {
             #if DEBUG_ADMIT
-                printf("SPORADIC: Time to reach first deadline is unachievable.\n");
+                RT_SCHED_DEBUG("SPORADIC: Time to reach first deadline is unachievable.\n");
             #endif
             return 0;
         }

@@ -9,7 +9,7 @@
 #ifndef rt_scheduler_h
 #define rt_scheduler_h
 
-
+#include <nautilus/thread.h>
 
 /******************************************************************
             REAL TIME THREAD
@@ -55,13 +55,13 @@ typedef struct nk_rt_t {
     uint64_t start_time; // when we last started this thread
     uint64_t run_time;   // how  long it's been running in its current period
     uint64_t deadline;   // deadline for current period
-    nk_thread_t *thread;
+    struct nk_thread *thread;
 } nk_rt_t;
 
 nk_rt_t * nk_rt_init(int type,
                      rt_constraints_t *constraints,
                      uint64_t deadline,
-                     nk_thread_t *thread
+                     struct nk_thread *thread
                      );
 
 

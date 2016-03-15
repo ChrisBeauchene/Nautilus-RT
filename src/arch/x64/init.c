@@ -161,41 +161,6 @@ runtime_init (void)
 
 extern struct naut_info * smp_ap_stack_switch(uint64_t, uint64_t, struct naut_info*);
 
-static void test_thread(void *in)
-{
-	nk_thread_id_t tid = nk_get_tid();
-	printk("(%lx) Hello from thread... \n", tid);
-	struct naut_info * naut = &nautilus_info;	
-	apic_oneshot_write(naut->sys.cpus[my_cpu_id()]->apic, 510000);	
-	udelay(1000000);	
-	RT_DEBUG_PRINT("Apic reads current clock time is %d initial clock time is %d\n", apic_oneshot_read(naut->sys.cpus[my_cpu_id()]->apic), apic_read(naut->sys.cpus[my_cpu_id()]->apic, APIC_REG_TMICT));
-	printk("(%lx) woke up!\n", tid);
-}
-
-static void test_real_time(void *in)
-{
-	
-}
-
-void nk_rt_test()
-{
-	nk_thread_id_t r;
-	//nk_thread_id_t s;
-	//nk_thread_id_t t;
-	rt_constraints *constraints = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr = {5000 + (rand() % 100000), (rand() % 10000), 0, 40};
-	constraints->periodic = per_constr;
-	
-	nk_thread_start((nk_thread_fun_t)test_thread, NULL, NULL, 0, 0, &r, my_cpu_id(), PERIODIC, constraints, 0);
-	//nk_thread_start((nk_thread_fun_t)test_thread, NULL, NULL, 0, 0, &s, 0);
-	//nk_thread_start((nk_thread_fun_t)test_thread, NULL, NULL, 0, 0, &t, 0);
-	nk_join(r, NULL);
-	//nk_join(s, NULL);
-	//nk_join(t, NULL);
-}
-		
-
-
 void
 init (unsigned long mbd,
       unsigned long magic)

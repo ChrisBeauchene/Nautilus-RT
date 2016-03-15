@@ -644,9 +644,10 @@ nk_thread_start (nk_thread_fun_t fun,
 			RT_THREAD_DEBUG("FAILED TO START THREAD. ADMISSION CONTROL DENYING ENTRY.\n")
 		}
 	}
-#endif
+	nk_schedule();
+#else
 	nk_enqueue_thread_on_runq(newthread, cpu);
-
+#endif
     
 
 #ifdef NAUT_CONFIG_DEBUG_THREADS
@@ -1309,7 +1310,10 @@ __thread_fork (void)
     // we provide null for thread func to indicate this is a fork
     thread_setup_init_stack(t, NULL, NULL); 
 
-    // put it on the run queue
+    
+// put it on the run queue
+#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
+#endif
     nk_enqueue_thread_on_runq(t, t->bound_cpu);
 
     // return child's tid to parent
@@ -1337,7 +1341,9 @@ nk_need_resched (void)
     return p;
 }
 #else
-{	ASSERT(!irqs_enabled());
+{	
+	RT_THREAD_DEBUG("INSIDE NK_NEED_RESCHED!\n");
+	ASSERT(!irqs_enabled());
 	return rt_need_resched();
 }
 #endif

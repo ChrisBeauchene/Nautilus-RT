@@ -626,6 +626,7 @@ nk_thread_start (nk_thread_fun_t fun,
     thread_setup_init_stack(newthread, fun, input);
 #ifdef NAUT_CONFIG_USE_RT_SCHEDULER
 	rt_thread *rt = rt_thread_init(rt_type, rt_constraints, rt_deadline, newthread);
+	RT_THREAD_DEBUG("rt_deadline is %llu\n", rt->deadline);
 	struct sys_info *sys = per_cpu_get(system);
 	if (sys->cpus[cpu]->rt_sched)
         {	
@@ -634,6 +635,7 @@ nk_thread_start (nk_thread_fun_t fun,
 			if (rt_type == PERIODIC || rt_type == SPORADIC)
 			{
 				enqueue_thread(sys->cpus[cpu]->rt_sched->runnable, rt);
+				RT_THREAD_DEBUG("THREAD DEADLINE ON RUN QUEUE IS: %llu\n", sys->cpus[cpu]->rt_sched->runnable->threads[0]->deadline);
 			}
 			else 
 			{
@@ -641,7 +643,7 @@ nk_thread_start (nk_thread_fun_t fun,
 			}
 		} else
 		{
-			RT_THREAD_DEBUG("FAILED TO START THREAD. ADMISSION CONTROL DENYING ENTRY.\n")
+			RT_THREAD_DEBUG("FAILED TO START THREAD. ADMISSION CONTROL DENYING ENTRY.\n");
 		}
 	}
 	nk_schedule();
@@ -1342,7 +1344,6 @@ nk_need_resched (void)
 }
 #else
 {	
-	RT_THREAD_DEBUG("INSIDE NK_NEED_RESCHED!\n");
 	ASSERT(!irqs_enabled());
 	return rt_need_resched();
 }
@@ -1370,7 +1371,6 @@ nk_schedule (void)
         halt();
 #endif
     }
-
 
 #ifdef NAUT_CONFIG_ENABLE_STACK_CHECK
     // before we switch, make sure we're not
@@ -1465,13 +1465,14 @@ nk_sched_init_ap (void)
         goto out_err3;
     }
 
-    // set my current thread
-    put_cur_thread(me);
-
-    enqueue_thread_on_tlist(me);
+    
+// set my current thread
 #ifdef NAUT_CONFIG_USE_RT_SCHEDULER
-	my_cpu->rt_sched = rt_scheduler_init();
+	my_cpu->rt_sched = rt_scheduler_init(rt_thread_init(SCHEDULER, NULL, 0, me));
 #endif
+	
+    put_cur_thread(me);
+    enqueue_thread_on_tlist(me);
 
     // start another idle thread
 #if defined(NAUT_CONFIG_USE_IDLE_THREADS) && !defined(NAUT_CONFIG_USE_RT_SCHEDULER)
@@ -1558,13 +1559,13 @@ nk_sched_init (void)
         ERROR_PRINT("Could not create main thread's wait queue\n");
         goto out_err5;
     }
+   
+#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
+	my_cpu->rt_sched = rt_scheduler_init(rt_thread_init(SCHEDULER, NULL, 0, main));
+#endif
 
     put_cur_thread(main);
-
     enqueue_thread_on_tlist(main);
-#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
-	my_cpu->rt_sched = rt_scheduler_init();
-#endif
 
 #if defined(NAUT_CONFIG_USE_IDLE_THREADS) && !defined(NAUT_CONFIG_USE_RT_SCHEDULER)
     SCHED_DEBUG("Starting idle thread for cpu %d\n", my_cpu->id);

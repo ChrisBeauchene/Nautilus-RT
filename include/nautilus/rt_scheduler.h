@@ -49,7 +49,7 @@ typedef union rt_constraints {
 } rt_constraints;
 
 typedef struct rt_thread {
-    enum { APERIODIC = 0, SPORADIC = 1, PERIODIC = 2} type;
+    enum { APERIODIC = 0, SPORADIC = 1, PERIODIC = 2, SCHEDULER = 3} type;
     enum { CREATED = 0, ADMITTED = 1, RUNNING = 2} status;
     rt_constraints *constraints;
     uint64_t start_time; // when we last started this thread
@@ -94,10 +94,11 @@ typedef struct rt_scheduler {
     // APERIODIC QUEUE
     // The queue of threads that are aperiodic (least important)
     rt_queue *aperiodic;
-
+	
+   rt_thread *main_thread;
 } rt_scheduler;
 
-rt_scheduler* rt_scheduler_init();
+rt_scheduler* rt_scheduler_init(rt_thread *main_thread);
 struct nk_thread* rt_need_resched();
 
 void enqueue_thread(rt_queue *queue, rt_thread *thread);

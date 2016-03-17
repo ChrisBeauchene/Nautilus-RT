@@ -229,7 +229,7 @@ init (unsigned long mbd,
 	#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
 		printk("Disabling apic timer periodic.\n");
 		disable_apic_timer(naut->sys.cpus[my_cpu_id()]->apic);
-		apic_oneshot_write(naut->sys.cpus[my_cpu_id()]->apic, 1000000 / NAUT_CONFIG_HZ);
+		apic_oneshot_write(naut->sys.cpus[my_cpu_id()]->apic, 100000000 / NAUT_CONFIG_HZ);
 	#endif
 
     fpu_init(naut);

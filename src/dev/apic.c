@@ -353,8 +353,9 @@ void disable_apic_timer(struct apic_dev *apic)
 void apic_oneshot_write(struct apic_dev *apic, uint32_t time_us)
 {
 	uint8_t flags = irq_disable_save();
-	uint32_t busfreq = 1100;
+	uint32_t busfreq = 1100000000;
     	uint32_t tmp = (busfreq * time_us) / APIC_TIMER_DIV;
+	printk("WRITING TO APIC.\n");
     	apic_write(apic, APIC_REG_TMICT, (tmp < APIC_TIMER_DIV) ? APIC_TIMER_DIV : tmp);
 	apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_ONESHOT);
 	irq_enable_restore(flags);

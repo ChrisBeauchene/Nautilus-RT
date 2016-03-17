@@ -156,10 +156,26 @@ runtime_init (void)
 #ifdef NAUT_CONFIG_NESL_RT
         nesl_nautilus_main();
 #endif
+
 }
 
 
+
+
 extern struct naut_info * smp_ap_stack_switch(uint64_t, uint64_t, struct naut_info*);
+
+
+void tscdline_test(struct naut_info *naut)
+{
+	printk("CURRENT TDC: %llu\n", rdtsc());
+	disable_apic_timer(naut->sys.cpus[my_cpu_id()]->apic);
+	apic_deadline_write(naut->sys.cpus[my_cpu_id()]->apic, 100000000);
+	while(1)
+	{
+		printk("Current TDC: %llu\n", rdtsc());
+		udelay(1000000);
+	}
+}
 
 void
 init (unsigned long mbd,

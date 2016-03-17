@@ -1329,7 +1329,7 @@ nk_need_resched (void)
 {
     nk_thread_t * p;
     nk_thread_t * c;
-    
+    printk("NK NEED RESCHED TSC: %llu\n", rdtsc());
     RT_THREAD_DEBUG("Inside nk_need_resched\n");
     ASSERT(!irqs_enabled());
 
@@ -1343,9 +1343,15 @@ nk_need_resched (void)
     return p;
 }
 #else
-{	
+{
+	uint64_t start_time = rdtsc();
 	ASSERT(!irqs_enabled());
-	return rt_need_resched();
+	nk_thread_t * thread = rt_need_resched();
+	uint64_t end_time = rdtsc();
+	// printk("TIME FOR SCHEDULER: %llu\n", end_time - start_time);
+	struct sys_info * sys = per_cpu_get(system);
+	sys->cpus[thread->bound_cpu]->rt_sched->run_time = (end_time - start_time);
+	return thread;
 }
 #endif
 

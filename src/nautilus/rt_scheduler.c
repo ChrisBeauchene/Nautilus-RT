@@ -114,6 +114,7 @@ rt_scheduler* rt_scheduler_init(rt_thread *main_thread)
     rt_queue *pending = (rt_queue *)malloc(sizeof(rt_queue) + MAX_QUEUE * sizeof(rt_thread *));
     rt_queue *aperiodic = (rt_queue *)malloc(sizeof(rt_queue) + MAX_QUEUE * sizeof(rt_thread *));
     scheduler->main_thread = main_thread;
+    scheduler->run_time = 0;
     if (!scheduler || !runnable || ! pending || !aperiodic) {
         RT_SCHED_ERROR("Could not allocate rt scheduler\n");
         return NULL;
@@ -353,13 +354,13 @@ static void set_timer(rt_scheduler *scheduler, rt_thread *current_thread)
         uint64_t completion_time = 0;
         if (current_thread->type == PERIODIC)
         {
-            apic_oneshot_write(apic, MIN(thread->deadline - cur_time(), (current_thread->constraints->periodic.slice - current_thread->run_time)));
+            apic_deadline_write(apic, MIN(thread->deadline - cur_time(), (current_thread->constraints->periodic.slice - current_thread->run_time)));
         } else if (current_thread->type == SPORADIC)
         {
-            apic_oneshot_write(apic, MIN(thread->deadline - cur_time(), (current_thread->constraints->sporadic.work - current_thread->run_time)));
+            apic_deadline_write(apic, MIN(thread->deadline - cur_time(), (current_thread->constraints->sporadic.work - current_thread->run_time)));
         } else
         {
-            apic_oneshot_write(apic, MIN(thread->deadline - cur_time(), 1000000 / NAUT_CONFIG_HZ));
+            apic_deadline_write(apic, MIN(thread->deadline - cur_time(), 10000000));
         }
     } else
    {
@@ -371,7 +372,7 @@ static void set_timer_quantum()
 {
 	struct sys_info *sys = per_cpu_get(system);
 	struct apic_dev *apic = sys->cpus[my_cpu_id()]->apic;
-	apic_oneshot_write(apic, 1000000);
+	apic_deadline_write(apic, 10000000);
 }
 
 struct nk_thread *rt_need_resched()
@@ -463,7 +464,6 @@ struct nk_thread *rt_need_resched()
             break;
  
         case PERIODIC:
-	    RT_SCHED_DEBUG("CURRENT THREAD IS PERIODIC\n");
             update_exit(rt_c);
             if (rt_c->run_time >= rt_c->constraints->periodic.slice) {
                 check_deadlines(rt_c);
@@ -541,7 +541,7 @@ static inline void update_enter(rt_thread *t)
 static inline void check_deadlines(rt_thread *t)
 {
     if (cur_time() > t->deadline) {
-        RT_SCHED_ERROR("Missed deadline on task %p\n", t);
+        // RT_SCHED_ERROR("Missed deadline on task %p\n", t);
     }
 }
 
@@ -605,7 +605,7 @@ int rt_admit(rt_scheduler *scheduler, rt_thread *thread)
     if (thread->type == PERIODIC)
     {
         double avg_per = (get_avg_per(scheduler->runnable, scheduler->pending) / 2.0);
-        double sched_util = avg_per ? ((double)sched_run_time / avg_per) : 0.0;
+        double sched_util = avg_per ? ((double)scheduler->run_time / avg_per) : 0.0;
         double per_util = get_per_util(scheduler->runnable, scheduler->pending) + sched_util;
         RT_SCHED_DEBUG("UTIL FACTOR =  \t%lf\n", per_util);
         
@@ -720,8 +720,8 @@ static void test_real_time(void *in)
 {
 	while (1)
 	{	
-		udelay(1000000);
-		printk("IN TID: %d\n", *(int *)in);
+		// udelay(10000000);
+		// printk("IN TID: %d\n", *(int *)in);
 	}	
 }
 
@@ -731,22 +731,25 @@ void nk_rt_test()
 	nk_thread_id_t s;
 	nk_thread_id_t t;
 	rt_constraints *constraints_first = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr = {(100000000), (10000000), 0, 40};
-	constraints_first->periodic = per_constr;
+	struct periodic_constraints per_constr_first = {(100000000), (10000000), 0, 40};
+	constraints_first->periodic = per_constr_first;
+
 	rt_constraints *constraints_second = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr = {(100000000), (10000000), 0, 40};
-	constraints_second->periodic = per_constr;
+	struct periodic_constraints per_constr_second = {(100000000), (5000000), 0, 40};
+	constraints_second->periodic = per_constr_second;
+
 	rt_constraints *constraints_third = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr = {(100000000), (10000000), 0, 40};
-	constraints_third->periodic = per_constr;
-	RT_DEBUG_PRINT("ABOUT TO START FUNCTION.\n");
+	struct periodic_constraints per_constr_third = {(100000000), (2500000), 0, 40};
+	constraints_third->periodic = per_constr_third;
+
+	RT_DEBUG_PRINT("ABOUT TO START TEST.\n");
 	int first = 1, second = 2, third = 3;
 	int *first_ptr = &first;
 	int *second_ptr = &second;
 	int *third_ptr = &third;		
-	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)first_ptr, NULL, 0, 0, &r, my_cpu_id(), PERIODIC, constraints, 0);
-	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)second_ptr, NULL, 0, 0, &s, my_cpu_id(), PERIODIC, constraints, 0);
-	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)third_ptr, NULL, 0, 0, &t, my_cpu_id(), PERIODIC, constraints, 0);
+	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)first_ptr, NULL, 0, 0, &r, my_cpu_id(), PERIODIC, constraints_first, 0);
+	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)second_ptr, NULL, 0, 0, &s, my_cpu_id(), PERIODIC, constraints_second, 0);
+	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)third_ptr, NULL, 0, 0, &t, my_cpu_id(), PERIODIC, constraints_third, 0);
 	nk_join(r, NULL);
 	nk_join(s, NULL);
 	nk_join(t, NULL);

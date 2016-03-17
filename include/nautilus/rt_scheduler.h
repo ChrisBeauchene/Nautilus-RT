@@ -96,6 +96,7 @@ typedef struct rt_scheduler {
     rt_queue *aperiodic;
 	
    rt_thread *main_thread;
+   uint64_t run_time;
 } rt_scheduler;
 
 rt_scheduler* rt_scheduler_init(rt_thread *main_thread);

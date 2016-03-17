@@ -256,6 +256,7 @@ uint32_t apic_wait_for_send(struct apic_dev* apic);
 
 void disable_apic_timer(struct apic_dev *apic);
 void apic_oneshot_write(struct apic_dev *apic, uint32_t time_us);
+void apic_deadline_write(struct apic_dev *apic, uint32_t cycles);
 int apic_oneshot_read(struct apic_dev *apic);
 
 #ifdef __cplusplus 

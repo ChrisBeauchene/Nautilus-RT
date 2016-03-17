@@ -107,7 +107,7 @@ null_excp_handler (excp_entry_t * excp,
                 (void*)excp->rip,
                 cpu_id);
     }
-
+    printk("RDTSC at null exception is %llu\n", rdtsc());
     struct nk_regs * r = (struct nk_regs*)((char*)excp - 128);
     nk_print_regs(r);
     backtrace(r->rbp);

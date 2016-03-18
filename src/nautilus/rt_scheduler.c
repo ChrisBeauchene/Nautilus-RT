@@ -501,9 +501,6 @@ struct nk_thread *rt_need_resched()
             update_exit(rt_c);
             if (rt_c->run_time >= rt_c->constraints->periodic.slice) {
                 check_deadlines(rt_c);
-		// printk("PERIODIC TASK %llu finished and met deadline %llu at time %llu\n", rt_c->thread->tid, rt_c->deadline, cur_time());
-                // If we haven't passsed the deadline then we just enqueue onto the pending queue and the
-                    // old deadline becomes the new "arrival" time.
                 enqueue_thread(scheduler->pending, rt_c);
                 if (scheduler->runnable->size > 0) {
                     rt_n = dequeue_thread(scheduler->runnable);

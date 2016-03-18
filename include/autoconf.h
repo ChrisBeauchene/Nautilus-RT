@@ -1,7 +1,7 @@
 /*
  * Automatically generated C config: don't edit
  * Nautilus version: 
- * Thu Mar 17 00:41:42 2016
+ * Thu Mar 17 15:47:36 2016
  */
 #define AUTOCONF_INCLUDED
 
@@ -61,7 +61,7 @@
 #undef NAUT_CONFIG_DEBUG_CXX
 #undef NAUT_CONFIG_DEBUG_THREADS
 #define NAUT_CONFIG_DEBUG_RT_SCHEDULER 1
-#undef NAUT_CONFIG_DEBUG_RT_THREADS
+#define NAUT_CONFIG_DEBUG_RT_THREADS 1
 #undef NAUT_CONFIG_DEBUG_SYNCH
 #undef NAUT_CONFIG_DEBUG_BARRIER
 #undef NAUT_CONFIG_DEBUG_NUMA
@@ -77,7 +77,7 @@
 /*
  * Device options
  */
-#undef NAUT_CONFIG_SERIAL_REDIRECT
+#define NAUT_CONFIG_SERIAL_REDIRECT 1
 #define NAUT_CONFIG_SERIAL_PORT 1
 #undef NAUT_CONFIG_DEBUG_APIC
 #undef NAUT_CONFIG_DEBUG_IOAPIC

@@ -361,7 +361,7 @@ void apic_oneshot_write(struct apic_dev *apic, uint32_t time_us)
 
 void apic_deadline_write(struct apic_dev *apic, uint32_t cycles)
 {
-	apic_write(apic, APIC_REG_TMICT, cycles);
+	apic_write(apic, APIC_REG_TMICT, cycles / APIC_TIMER_DIV);
 	apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_TSCDLINE);
 }
 

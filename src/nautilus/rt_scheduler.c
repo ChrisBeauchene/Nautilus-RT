@@ -607,46 +607,12 @@ uint64_t cur_time()
 
 int rt_admit(rt_scheduler *scheduler, rt_thread *thread)
 {
-    
-    // This is the schedulers run time.
-        // Here we want to assume the worst case scenario per scheduler call.
-        // This will happen when a periodic thread finishes running in which case we need to:
-            // Update the contents of the thread
-            // Enqueue thread onto the pending queue
-            // Worst case is there is a job to switch to
-            // We then need to perform a context switch by dequeueing the run queue and placing that
-            // thread onto the CPU. Else we switch to an aperiodic job.
-            // We then need to account for the time it takes to set the timer and the "time it takes to switch back and forth for the scheduler itself and the overhead caused by the interrupts that took us to the scheduler in the first place.
-    
-    // AN ASSUMPTION. COMPLETELY INACCURATE AT THE MOMENT!!!!!!!
-        // TESTS ON THE SCHEDULER TO CALCULATE THE WORST CASE ABOVE MUST BE PERFORMED
-    
-    
-    // Divide by 2 to account for arrivals and deadlines!
-    // ie. if average period is 47 then we can expect a job to arrive and finish each
-    //      once every 47 cycles. The scheduler is then called twice in this case
-    
-    
-    
-    // GIVE 0.7 UTILIZATION TO PERIODIC JOBS + SCHEDULER
-        // THIS MEANS THAT WE LEAVE THE REMAINING 0.3 ALLOCATED BETWEEN SPORADIC JOBS AND APERIODIC JOBS
-            // TRY 0.2 TO SPORADIC IN THIS CASE AND 0.1 TO APERIODIC
-    // CHECK rt_scheduler.c FOR DEFINITION MACROS
-
-    
-    // For now i won't worry about the scheduler
-    // per_util += sched_util;
-    
-    
-    // If the thread is periodic, then what we want to do is check to see whether or not the sum of the already allocatied
-    // utilization is greater than what we allowed for periodic utilization. If is not, then we can admit the thread!
     if (thread->type == PERIODIC)
     {
         uint64_t min_period = (get_min_per(scheduler->runnable, scheduler->pending, thread) / 2.0);
         double sched_util = (double)scheduler->run_time / min_period;
         double per_util = get_per_util(scheduler->runnable, scheduler->pending) + sched_util;
         RT_SCHED_DEBUG("UTIL FACTOR =  \t%f\n", (float)per_util);
-        
         
         if ((per_util + (((double)thread->constraints->periodic.slice) / (double)thread->constraints->periodic.period)) > PERIODIC_UTIL) {
             RT_SCHED_ERROR("PERIODIC: Admission denied utilization factor overflow!\n");

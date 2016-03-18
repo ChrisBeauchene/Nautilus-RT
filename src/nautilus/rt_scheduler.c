@@ -626,24 +626,14 @@ int rt_admit(rt_scheduler *scheduler, rt_thread *thread)
         }
     } else if (thread->type == SPORADIC)
     {
-        double spor_util = get_spor_util(scheduler->runnable);
-        if ((spor_util + (double)thread->constraints->sporadic.work / ((double)thread->deadline - (double)cur_time())) > SPORADIC_UTIL) {
+	uint64_t min_period = (get_min_per(scheduler->runnable, scheduler->pending, thread) / 2.0);
+	double sched_util = (double)scheduler->run_time / min_period;
+        double per_util = get_per_util(scheduler->runnable, scheduler->pending) + sched_util;
+
+        if (((double)thread->constraints->sporadic.work / (1 - per_util)) < (thread->deadline)) {
             RT_SCHED_DEBUG("SPORADIC: Admission denied utilization factor overflow!\n");
             return 0;
         }
-        
-        if (thread->deadline > (cur_time() - scheduler->run_time))
-	{
-		if (thread->deadline - cur_time() - scheduler->run_time <= thread->constraints->sporadic.work)
-		{
-            		RT_SCHED_DEBUG("SPORADIC: Time to reach first deadline is unachievable.\n");
-            		return 0;
-        	}
-	} else 
-	{
-		RT_SCHED_DEBUG("SPORADIC: Time to reach first deadline is unachievable.\n");
-            	return 0;
-	}
     }
 
     RT_SCHED_DEBUG("Slice of thread is %f\n", (double)thread->constraints->periodic.slice);

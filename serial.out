@@ -61,7 +61,7 @@ MWAIT not supported
 BEGIN TESTING THE REAL-TIME SCHEDULER
 RT_DEBUG: ABOUT TO START TEST.
 SCHEDULER
-Running periodic task 1 with deadline 113214269710
+Running periodic task 1 with deadline 108705402100
 IN TID: 1
 IN TID: 1
 IN TID: 1
@@ -88,11 +88,9 @@ IN TID: 1
 IN TID: 1
 IN TID: 1
 IN TID: 1
-IN TID: 1
-IRunning scheduler.
+Running scheduler.
 SCHEDULER
-Running periodic task 2 with deadline 73339024511
-IN TID: 2
+Running periodic task 2 with deadline 68835297263
 IN TID: 2
 IN TID: 2
 IN TID: 2
@@ -108,10 +106,10 @@ IN TID: 2
 IN TID: 2
 Running scheduler.
 SCHEDULER
-Running periodic task 3 with deadline 30979540198
+Running periodic task 3 with deadline 26462897743
 Running scheduler.
 SCHEDULER
-Running periodic task 4 with deadline 78759004136
+Running periodic task 4 with deadline 74245961123
 IN TID: 5
 IN TID: 5
 IN TID: 5
@@ -119,7 +117,7 @@ IN TID: 5
 IN TID: 5
 IN TID: 5
 IN TID: 3
-Running periodic task 4 with deadline 78759004136
+Running periodic task 4 with deadline 74245961123
 IN TID: 5
 IN TID: 5
 IN TID: 5
@@ -127,45 +125,42 @@ IN TID: 5
 IN TID: 5
 IN TID: 5
 IN TID: 3
-Running periodic task 4 with deadline 78759004136
+Running periodic task 4 with deadline 74245961123
 IN TID: 5
 Running scheduler.
 SCHEDULER
-Running periodic task 5 with deadline 84343115330
+Running periodic task 5 with deadline 79823261084
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+Running periodic task 5 with deadline 79823261084
+IN TID: 6
 IN TID: 6
 IN TID: 6
 IN TID: 6
 IN TID: 6
 IN TID: 3
-Running periodic task 5 with deadline 84343115330
+Running periodic task 5 with deadline 79823261084
 IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-Running periodic task 5 with deadline 84343115330
 IN TID: 6
 IN TID: 6
 Running scheduler.
 SCHEDULER
-Running periodic task 6 with deadline 89934325232
+Running periodic task 6 with deadline 85405153772
 IN TID: 7
 IN TID: 7
 IN TID: 7
 IN TID: 3
-Running periodic task 6 with deadline 89934325232
+Running periodic task 6 with deadline 85405153772
 IN TID: 7
 IN TID: 7
 IN TID: 7
 IN TID: 7
 IN TID: 7
 IN TID: 7
-IN TID: 7
-IN TID: 3
-Running periodic task 6 with deadline 89934325232
-IN TID: 7
+Running periodic task 6 with deadline 85405153772
 IN TID: 7
 IN TID: 7
 IN TID: 7
@@ -173,354 +168,3 @@ Running scheduler.
 SCHEDULER
 Running aperiodic task. All periodic tasks in pending queue.
 IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 48952394125
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 51557497999
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 54122236753
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 56689923172
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 59255053483
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 61841546182
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 64421752408
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 66985424443
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 69551523412
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 72116488264
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 74681335777
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 2 with deadline 123386479802
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-Running periodic task 2 with deadline 123386479802
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 3
-Running periodic task 2 with deadline 123386479802
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-Running periodic task 4 with deadline 128804567984
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 3
-Running periodic task 4 with deadline 128804567984
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 3
-Running periodic task 4 with deadline 128804567984
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-Running periodic task 5 with deadline 134390949905
-IN TID: 6
-IN TID: 6
-Running periodic task 5 with deadline 134390949905
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 3
-Running periodic task 5 with deadline 134390949905
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-Running periodic task 3 with deadline 92553555679
-IN TID: 3
-Running periodic task 6 with deadline 139995171563
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 3
-Running periodic task 6 with deadline 139995171563
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 7
-Running periodic task 6 with deadline 139995171563
-IN TID: 7
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 100253152320
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 102841734520
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 105406612270
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 107970405754
-IRunning scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IRunning periodic task 3 with deadline 110534943073
-N TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-N TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 113101027117
-IN TID: 3
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-IN TID: 4
-Running periodic task 3 with deadline 115665404962
-IN TID: 3
-Running periodic task 1 with deadline 213219952975
-N TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-Running periodic task 1 with deadline 213219952975
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 3
-Running periodic task 1 with deadline 213219952975
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 3
-Running periodic task 1 with deadline 213219952975
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 1
-IN TID: 3
-Running periodic task 2 with deadline 173453371055
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-Running periodic task 2 with deadline 173453371055
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 2
-IN TID: 3
-Running periodic task 2 with deadline 173453371055
-IN TID: 2
-IN TID: 2
-Running periodic task 4 with deadline 178816877516
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 3
-Running periodic task 4 with deadline 178816877516
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-Running periodic task 4 with deadline 178816877516
-IN TID: 5
-IN TID: 5
-Running periodic task 5 with deadline 184425083264
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 3
-Running periodic task 5 with deadline 184425083264
-IN TID: 6
-IN TID: 6

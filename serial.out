@@ -61,7 +61,8 @@ MWAIT not supported
 BEGIN TESTING THE REAL-TIME SCHEDULER
 RT_DEBUG: ABOUT TO START TEST.
 SCHEDULER
-Running periodic task 1 with deadline 108705402100
+Running periodic task 1 with deadline 109528536787
+IN TID: 1
 IN TID: 1
 IN TID: 1
 IN TID: 1
@@ -90,7 +91,7 @@ IN TID: 1
 IN TID: 1
 Running scheduler.
 SCHEDULER
-Running periodic task 2 with deadline 68835297263
+Running periodic task 2 with deadline 69661808807
 IN TID: 2
 IN TID: 2
 IN TID: 2
@@ -106,65 +107,8 @@ IN TID: 2
 IN TID: 2
 Running scheduler.
 SCHEDULER
-Running periodic task 3 with deadline 26462897743
+Running periodic task 3 with deadline 27309721744
 Running scheduler.
 SCHEDULER
-Running periodic task 4 with deadline 74245961123
+Running periodic task 4 with deadline 75073662863
 IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 3
-Running periodic task 4 with deadline 74245961123
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 5
-IN TID: 3
-Running periodic task 4 with deadline 74245961123
-IN TID: 5
-Running scheduler.
-SCHEDULER
-Running periodic task 5 with deadline 79823261084
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-Running periodic task 5 with deadline 79823261084
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 6
-IN TID: 3
-Running periodic task 5 with deadline 79823261084
-IN TID: 6
-IN TID: 6
-IN TID: 6
-Running scheduler.
-SCHEDULER
-Running periodic task 6 with deadline 85405153772
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 3
-Running periodic task 6 with deadline 85405153772
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 7
-IN TID: 7
-Running periodic task 6 with deadline 85405153772
-IN TID: 7
-IN TID: 7
-IN TID: 7
-Running scheduler.
-SCHEDULER
-Running aperiodic task. All periodic tasks in pending queue.
-IN TID: 4

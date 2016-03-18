@@ -1,0 +1,1220 @@
+Welcome to                                         
+    _   __               __   _  __                
+   / | / /____ _ __  __ / /_ (_)/ /__  __ _____    
+  /  |/ // __ `// / / // __// // // / / // ___/    
+ / /|  // /_/ // /_/ // /_ / // // /_/ /(__  )     
+/_/ |_/ \__,_/ \__,_/ \__//_//_/ \__,_//____/  
++===============================================+  
+ Kyle C. Hale (c) 2014 | Northwestern University   
++===============================================+  
+
+Detected AuthenticAMD Processor
+BOOTMEM: Setting up boot memory allocator
+BOOTMEM: Memory map[0] - [0x00000000 - 0x0009f000] <usable RAM>
+BOOTMEM: Memory map[1] - [0x000a0000 - 0x000a0000] <reserved>
+BOOTMEM: Memory map[2] - [0x000f0000 - 0x00100000] <reserved>
+BOOTMEM: Memory map[3] - [0x00100000 - 0x7fffe000] <usable RAM>
+BOOTMEM: Memory map[4] - [0x7fffe000 - 0x80000000] <reserved>
+BOOTMEM: Memory map[5] - [0xfffc0000 - 0x100000000] <reserved>
+BOOTMEM: Detected 2147.81216 MB of usable System RAM
+SMP: Verifying MP Floating Ptr Struct integrity...OK
+SMP: Parsing MP Table (entry count=19)
+SMP: Verifying MP Table integrity...OK
+SMP: Detected 1 CPUs
+ACPI: Parsing ACPI root table (at 0x000f0990)
+ACPI: RSDP 00000000000f0990 00014 (v00 BOCHS )
+ACPI: RSDT 000000007ffffbc1 00034 (v01 BOCHS  BXPCRSDT 00000001 BXPC 00000001)
+ACPI: root table checksum pass
+ACPI: FACP 000000007ffff1c0 00074 (v01 BOCHS  BXPCFACP 00000001 BXPC 00000001)
+ACPI: SSDT 000000007ffff234 008DD (v01 BOCHS  BXPCSSDT 00000001 BXPC 00000001)
+ACPI: APIC 000000007ffffb11 00078 (v01 BOCHS  BXPCAPIC 00000001 BXPC 00000001)
+ACPI: HPET 000000007ffffb89 00038 (v01 BOCHS  BXPCHPET 00000001 BXPC 00000001)
+ACPI: Done parsing ACPI root table
+NUMA: Parsing ACPI NUMA information...
+NUMA: DONE.
+Remapping phys mem [0x00000000 - 0x100000000] with 2MB pages
+KMEM: CPU 0 region affinity list:
+KMEM:     [Domain=0, 0x00000000-0x0009f000]
+KMEM:     [Domain=0, 0x00100000-0x7fffe000]
+BOOTMEM: Adding boot memory regions to the kernel memory pool:
+BOOTMEM:     [Domain 00 : Region 00] (0.00 MB)
+BOOTMEM:     [Domain 00 : Region 01] (2128.609280 MB)
+BOOTMEM:     =======
+BOOTMEM:     [TOTAL] (2128.609280 MB)
+Disabling legacy 8259 PIC
+Initializing i8254 PIT
+Disabling apic timer periodic.
+Initialize keyboard
+PCI: Probing PCI bus...
+PCI: 0000:00:00.0 8086:1237 (rev 2)
+PCI: 0000:00:01.0 8086:7000 (rev 0)
+PCI: 0000:00:02.0 1013:b8 (rev 0)
+PCI: 0000:00:03.0 8086:100e (rev 3)
+SCHED: Initializing scheduler
+BOOTMEM: Reclaiming boot sections and data:
+BOOTMEM:     [Boot alloc. page map] (0.32 MB)
+BOOTMEM:     [Boot page tables and stack]     (0.4096 MB)
+BOOTMEM:     =======
+BOOTMEM:     [TOTAL] (2.109472 MB)
+SMP: Setting up cross-core IPI event queue
+MWAIT not supported
+BEGIN TESTING THE REAL-TIME SCHEDULER
+RT_DEBUG: ABOUT TO START TEST.
+SCHEDULER
+Running periodic task 1 with deadline 108784984249
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+Running scheduler.
+SCHEDULER
+Running periodic task 2 with deadline 68911983539
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+Running scheduler.
+SCHEDULER
+Running periodic task 3 with deadline 26571591502
+Running scheduler.
+SCHEDULER
+Running periodic task 4 with deadline 74354899958
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 3
+Running periodic task 4 with deadline 74354899958
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 3
+Running periodic task 4 with deadline 74354899958
+IN TID: 5
+Running scheduler.
+SCHEDULER
+Running periodic task 5 with deadline 79918972235
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+Running periodic task 5 with deadline 79918972235
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 3
+Running periodic task 5 with deadline 79918972235
+IN TID: 6
+IN TID: 6
+Running scheduler.
+SCHEDULER
+Running periodic task 6 with deadline 85482937928
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 3
+Running periodic task 6 with deadline 85482937928
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 3
+Running periodic task 6 with deadline 85482937928
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 44585476645
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IRunning periodic task 3 with deadline 47157623692
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+N TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 49724419126
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 52292028709
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 54858737848
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 57427884088
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 59995746457
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 62575730614
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 65150107303
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 67739840953
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 70308776155
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+Running periodic task 2 with deadline 118953656849
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IRunning periodic task 2 with deadline 118953656849
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+N TID: 3
+Running periodic task 2 with deadline 118953656849
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+Running periodic task 4 with deadline 124397024027
+IN TID: 5
+IN TID: 5
+IN TID: 3
+Running periodic task 4 with deadline 124397024027
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 3
+Running periodic task 4 with deadline 124397024027
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+Running periodic task 5 with deadline 129974875244
+IN TID: 6
+IN TID: 3
+Running periodic task 5 with deadline 129974875244
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+Running periodic task 5 with deadline 129974875244
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+Running periodic task 6 with deadline 135548253548
+IN TID: 3
+Running periodic task 6 with deadline 135548253548
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 3
+Running periodic task 6 with deadline 135548253548
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 3
+Running periodic task 6 with deadline 135548253548
+IN TID: 7
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 95849488942
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 98419943149
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 100988905939
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 103553601697
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 106126095352
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 108690971179
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 111284435299
+IN TID: 3
+Running periodic task 1 with deadline 208790438431
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 3
+Running periodic task 1 with deadline 208790438431
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+Running periodic task 1 with deadline 208790438431
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 3
+Running periodic task 1 with deadline 208790438431
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 3
+Running periodic task 2 with deadline 169017927092
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+Running periodic task 2 with deadline 169017927092
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 3
+Running periodic task 2 with deadline 169017927092
+IN TID: 2
+Running periodic task 4 with deadline 174414813003
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 3
+Running periodic task 4 with deadline 174414813003
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 3
+Running periodic task 4 with deadline 174414813003
+IN TID: 5
+IN TID: 5
+IN TID: 5
+Running periodic task 5 with deadline 180025048397
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+Running periodic task 5 with deadline 180025048397
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 3
+Running periodic task 5 with deadline 180025048397
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+Running periodic task 6 with deadline 185576195339
+IN TID: 7
+IN TID: 7
+IN TID: 3
+Running periodic task 6 with deadline 185576195339
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 3
+Running periodic task 6 with deadline 185576195339
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+Running periodic task 1 with deadline 208790438431
+IN TID: 1
+IN TID: 1
+Running periodic task 1 with deadline 208790438431
+IN TID: 1
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 147112648999
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 149702018344
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 152281593215
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 154850256613
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 157414290457
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 159977841607
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 162565809529
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 165142728952
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 167722541554
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 170286713194
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 2 with deadline 219077789174
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 3
+Running periodic task 2 with deadline 219077789174
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 3
+Running periodic task 2 with deadline 219077789174
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+Running periodic task 4 with deadline 224464402832
+IN TID: 5
+IN TID: 5
+Running periodic task 4 with deadline 224464402832
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 3
+Running periodic task 4 with deadline 224464402832
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+Running periodic task 5 with deadline 230099654942
+IN TID: 6
+IN TID: 3
+Running periodic task 5 with deadline 230099654942
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 3
+Running periodic task 5 with deadline 230099654942
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+Running periodic task 5 with deadline 230099654942
+Running periodic task 6 with deadline 235667333375
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 3
+Running periodic task 6 with deadline 235667333375
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 3
+Running periodic task 6 with deadline 235667333375
+IN TID: 7
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 195900391885
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 198464246971
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 201050474167
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 203628699769
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 206192362252
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 208779348757
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 211343625988
+IN TID: 3
+Running periodic task 1 with deadline 308843629237
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+Running periodic task 1 with deadline 308843629237
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 3
+Running periodic task 1 with deadline 308843629237
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 3
+Running periodic task 1 with deadline 308843629237
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 3
+Running periodic task 2 with deadline 269111277083
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IRunning periodic task 2 with deadline 269111277083
+N TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 3
+Running periodic task 2 with deadline 269111277083
+IN TID: 2
+Running periodic task 4 with deadline 274494894086
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 3
+Running periodic task 4 with deadline 274494894086
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 3
+Running periodic task 4 with deadline 274494894086
+IN TID: 5
+IN TID: 5
+Running periodic task 5 with deadline 280141343363
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+Running periodic task 5 with deadline 280141343363
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 3
+Running periodic task 5 with deadline 280141343363
+IN TID: 6
+IN TID: 6
+IN TID: 6
+Running periodic task 6 with deadline 285705575219
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 3
+Running periodic task 6 with deadline 285705575219
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 3
+Running periodic task 6 with deadline 285705575219
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+Running periodic task 1 with deadline 308843629237
+IN TID: 1
+IN TID: 1
+Running periodic task 1 with deadline 308843629237
+IN TID: 1
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 247227472693
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 249792420463
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 252374212651
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 254977415569
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 257541324073
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 260108536417
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 262678665130
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 265256607157
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IRunning periodic task 3 with deadline 267829846426
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+N TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 270394748251
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 2 with deadline 319143513353
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 3
+Running periodic task 2 with deadline 319143513353
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2
+Running periodic task 2 with deadline 319143513353
+IN TID: 2
+IN TID: 2
+IN TID: 2
+IRunning periodic task 4 with deadline 324537035555
+IN TID: 5
+IN TID: 5
+IN TID: 3
+Running periodic task 4 with deadline 324537035555
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 3
+Running periodic task 4 with deadline 324537035555
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+IN TID: 5
+Running periodic task 5 with deadline 330198225026
+IN TID: 6
+IN TID: 3
+Running periodic task 5 with deadline 330198225026
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+Running periodic task 5 with deadline 330198225026
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 6
+IN TID: 3
+Running periodic task 5 with deadline 330198225026
+Running periodic task 6 with deadline 335768577833
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 7
+IN TID: 3
+Running periodic task 6 with deadline 335768577833
+IN TID: 7
+IN TID: 7
+IN TID: 7
+Running periodic task 6 with deadline 335768577833
+IN TID: 7
+IN TID: 7
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 295985978790
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 298556243010
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 301125934671
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 303690502791
+IN TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 306271981599
+IRunning scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 308837443722
+N TID: 3
+Running scheduler.
+SCHEDULER
+Running aperiodic task. All periodic tasks in pending queue.
+IN TID: 4
+IN TID: 4
+IN TID: 4
+Running periodic task 3 with deadline 311402340072
+Running periodic task 1 with deadline 408902343417
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 3
+Running periodic task 1 with deadline 408902343417
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 1
+Running periodic task 1 with deadline 408902343417
+IN TID: 1
+IN TID: 1
+IN TID: 1
+IN TID: 3
+Running periodic task 1 with deadline 408902343417
+IN TID: 1
+IN TID: 1
+IN TID: 1
+Running periodic task 2 with deadline 369214455112
+N TID: 2
+IN TID: 2
+IN TID: 2
+IN TID: 2

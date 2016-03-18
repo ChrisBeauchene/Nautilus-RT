@@ -24,6 +24,7 @@
 #define __APIC_H__
 
 #include <nautilus/naut_types.h>
+#include <nautilus/msr.h>
 
 #ifdef __cplusplus 
 extern "C" {
@@ -55,6 +56,10 @@ extern "C" {
 
 #define IA32_APIC_BASE_MSR_BSP    0x100 
 #define IA32_APIC_BASE_MSR_ENABLE 0x800
+
+#ifdef NAUT_CONFIG_USE_RT_SCHEDULER
+#define IA32_TSCDEADLINE_MSR 0x6e0
+#endif
 
 #define APIC_BASE_ADDR_MASK 0xfffffffffffff000ULL
 #define APIC_IS_BSP(x)      ((x) & (1 << 8))
@@ -209,7 +214,23 @@ apic_write (struct apic_dev * apic,
     *((volatile uint32_t *)(apic->base_addr + reg)) = val;
 }
 
+static inline void 
+apic_tsc_write( struct apic_dev *apic,
+		uint32_t reg,
+		uint64_t val)
+{
+	// printk("VALUE IN BASE IS : %llu\n", msr_read(MSR_GS_BASE));
+	// *((volatile uint64_t *)(reg)) = val;
+	msr_write(msr_read(MSR_GS_BASE) + reg, val);
+}
 
+static inline uint64_t 
+apic_tsc_read( struct apic_dev *apic,
+		uint32_t reg)
+{
+	return msr_read(msr_read(MSR_GS_BASE) + reg);
+	// return *((volatile uint64_t *)(reg));
+}
 static inline uint32_t
 apic_read (struct apic_dev * apic, uint_t reg)
 {
@@ -256,7 +277,7 @@ uint32_t apic_wait_for_send(struct apic_dev* apic);
 
 void disable_apic_timer(struct apic_dev *apic);
 void apic_oneshot_write(struct apic_dev *apic, uint32_t time_us);
-void apic_deadline_write(struct apic_dev *apic, uint32_t cycles);
+void apic_deadline_write(struct apic_dev *apic, uint64_t cycles);
 int apic_oneshot_read(struct apic_dev *apic);
 
 #ifdef __cplusplus 

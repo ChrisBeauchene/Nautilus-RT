@@ -55,6 +55,7 @@ typedef struct rt_thread {
     uint64_t start_time; // when we last started this thread
     uint64_t run_time;   // how  long it's been running in its current period
     uint64_t deadline;   // deadline for current period
+    uint64_t exit_time;
     struct nk_thread *thread;
 } rt_thread;
 
@@ -80,6 +81,15 @@ typedef struct rt_queue {
     rt_thread *threads[0];
 } rt_queue ;
 
+typedef struct tsc_info {
+	uint64_t set_time;
+	uint64_t start_time;
+	uint64_t end_time;
+	uint64_t elapsed_time;
+	
+	uint64_t error;
+} tsc_info;
+
 typedef struct rt_scheduler {
     
     // RUN QUEUE
@@ -97,6 +107,7 @@ typedef struct rt_scheduler {
 	
    rt_thread *main_thread;
    uint64_t run_time;
+   tsc_info *tsc;
 } rt_scheduler;
 
 rt_scheduler* rt_scheduler_init(rt_thread *main_thread);

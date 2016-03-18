@@ -1387,7 +1387,6 @@ nk_need_resched (void)
 	ASSERT(!irqs_enabled());
 	nk_thread_t * thread = rt_need_resched();
 	uint64_t end_time = rdtsc();
-	// printk("TIME FOR SCHEDULER: %llu\n", end_time - start_time);
 	struct sys_info * sys = per_cpu_get(system);
 	sys->cpus[thread->bound_cpu]->rt_sched->run_time = (sys->cpus[thread->bound_cpu]->rt_sched->run_time > (end_time - start_time)) ? sys->cpus[thread->bound_cpu]->rt_sched->run_time : (end_time - start_time);
 	return thread;

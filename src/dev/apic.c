@@ -1,5 +1,4 @@
-/* 
- * This file is part of the Nautilus AeroKernel developed
+/*   APIC_DEBUG("Setting up Local APIC timer for APIC 0x%x\n", as file is part of the Nautilus AeroKernel developed
  * by the Hobbes and V3VEE Projects with funding from the 
  * United States National  Science Foundation and the Department of Energy.  
  *
@@ -352,17 +351,23 @@ void disable_apic_timer(struct apic_dev *apic)
 
 void apic_oneshot_write(struct apic_dev *apic, uint32_t time_us)
 {
-	uint8_t flags = irq_disable_save();
-    	uint32_t tmp = time_us / APIC_TIMER_DIV;
-    	apic_write(apic, APIC_REG_TMICT, (tmp < APIC_TIMER_DIV) ? APIC_TIMER_DIV : tmp);
-	apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_ONESHOT);
-	irq_enable_restore(flags);
+	apic_deadline_write(apic, time_us);
+	// uint8_t flags = irq_disable_save();
+    	// double us = (double)time_us / 390000000;
+    	// uint32_t busfreq = 1100000000;
+    	// APIC_DEBUG("Detected APIC 0x%x bus frequency as %u.%u MHz\n", apic->id, busfreq/1000000, busfreq%1000000);
+	// APIC_DEBUG("VALUE OF %u WROTE TO APIC,\n", time_us);
+   	// uint32_t tmp = (busfreq * (1000000 * us)) / APIC_TIMER_DIV;
+	// apic_write(apic, APIC_REG_TMICT, tmp);
+	// apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_ONESHOT);
+	// irq_enable_restore(flags);
 }
 
-void apic_deadline_write(struct apic_dev *apic, uint32_t cycles)
+void apic_deadline_write(struct apic_dev *apic, uint64_t cycles)
 {
-	apic_write(apic, APIC_REG_TMICT, cycles / APIC_TIMER_DIV);
+	apic_write(apic, APIC_REG_TMICT, (cycles - 200000) / 42);
 	apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_TSCDLINE);
+	APIC_DEBUG("TIME IN APIC DEADLINE WRITE IS: %llu\n", rdtsc());
 }
 
 int apic_oneshot_read(struct apic_dev *apic)
@@ -820,5 +825,6 @@ apic_init (struct cpu * core)
 #endif
 
     apic_dump(apic);
-}
+};
 
+ 

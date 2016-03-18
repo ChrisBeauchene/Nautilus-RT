@@ -1,0 +1,92 @@
+nase_addr:src/arch/x64/smp.c:    SMP_DEBUG("\tID=0x%x\n", ioapic->id);
+nase_addr:src/arch/x64/smp.c:    SMP_DEBUG("\tVersion=0x%x\n", ioapic->version);
+nase_addr:src/arch/x64/smp.c:    SMP_DEBUG("\tEnabled?=%01d\n", ioapic->enabled);
+nase_addr:src/arch/x64/smp.c:    SMP_DEBUG("\tBase Addr=0x%lx\n", ioapic->addr);
+nase_addr:src/arch/x64/smp.c:    ioa->id      = ioapic->id;
+nase_addr:src/arch/x64/smp.c:    ioa->version = ioapic->version;
+nase_addr:src/arch/x64/smp.c:    ioa->usable  = ioapic->enabled;
+nase_addr:src/arch/x64/smp.c:    ioa->base    = (addr_t)ioapic->addr;
+nase_addr:src/nautilus/smp.c:        apic_ipi(apic, sys->cpus[cpu_id]->apic->id, IPI_VEC_XCALL);
+nase_addr:src/test/ipi.c:    *(volatile uint32_t*)(apic->base_addr + (reg)) = (val);
+nase_addr:src/dev/ioapic.c:    ASSERT(irq < ioapic->num_entries);
+nase_addr:src/dev/ioapic.c:    ioapic->entries[irq].enabled = 0;
+nase_addr:src/dev/ioapic.c:    ASSERT(irq < ioapic->num_entries);
+nase_addr:src/dev/ioapic.c:    ioapic->entries[irq].enabled = 1;
+nase_addr:src/dev/ioapic.c:    ASSERT(irq < ioapic->num_entries);
+nase_addr:src/dev/ioapic.c:        ioapic->base
+nase_addr:src/dev/ioapic.c:    for (pin = 0; pin < ioapic->num_entries; pin++)  {
+nase_addr:src/dev/ioapic.c:    if (nk_map_page_nocache(ROUND_DOWN_TO_PAGE(ioapic->base), PTE_PRESENT_BIT|PTE_WRITABLE_BIT, PS_4K) == -1) {
+nase_addr:src/dev/ioapic.c:    for (i = 0; i < ioapic->num_entries; i++) {
+nase_addr:src/dev/ioapic.c:    ioapic->num_entries = ioapic_get_max_entry(ioapic) + 1;
+nase_addr:src/dev/ioapic.c:    ioapic->entries = malloc(sizeof(struct iored_entry)*ioapic->num_entries);
+nase_addr:src/dev/ioapic.c:    if (!ioapic->entries) {
+nase_addr:src/dev/ioapic.c:    memset(ioapic->entries, 0, sizeof(struct iored_entry)*ioapic->num_entries);
+nase_addr:src/dev/ioapic.c:    IOAPIC_DEBUG("\tMapping at %p\n", (void*)ioapic->base);
+nase_addr:src/dev/ioapic.c:    IOAPIC_DEBUG("\tNum Entries: %u\n", ioapic->num_entries);
+nase_addr:src/dev/ioapic.c:    for (i = 0; i < ioapic->num_entries; i++) {
+nase_addr:src/dev/ioapic.c:        if (ioint->dst_ioapic_id != ioapic->id) {
+nase_addr:src/dev/ioapic.c:                    ioapic->id,
+nase_addr:src/dev/ioapic.c:            struct iored_entry * iored_entry = &(ioapic->entries[ioint->dst_ioapic_intin]);
+nase_addr:src/dev/ioapic.c:    for (i = 0; i < ioapic->num_entries; i++) {
+nase_addr:src/dev/apic.c:    apic->err_int_cnt++;
+nase_addr:src/dev/apic.c:    APIC_DEBUG("Setting up Local APIC timer for APIC 0x%x\n", apic->id);
+nase_addr:src/dev/apic.c:    APIC_DEBUG("Detected APIC 0x%x bus frequency as %u.%u MHz\n", apic->id, busfreq/1000000, busfreq%1000000);
+nase_addr:src/dev/apic.c:        apic->base_addr
+nase_addr:src/dev/apic.c:    apic->base_addr = pa_to_va(base_addr);
+nase_addr:src/dev/apic.c:        if (nk_map_page_nocache(apic->base_addr, PTE_PRESENT_BIT|PTE_WRITABLE_BIT, PS_4K) == -1) {
+nase_addr:src/dev/apic.c:    apic->version   = apic_get_version(apic);
+nase_addr:src/dev/apic.c:    apic->id        = apic_get_id(apic);
+nase_addr:src/dev/apic.c:    if (apic->version < 0x10 || apic->version > 0x15) {
+nase_addr:src/dev/apic.c:        panic("Unsupported APIC version (0x%1x)\n", (unsigned)apic->version);
+nase_addr:include/dev/apic.h:    *((volatile uint32_t *)(apic->base_addr + reg)) = val;
+nase_addr:include/dev/apic.h:    return *((volatile uint32_t *)(apic->base_addr + reg));
+nase_addr:include/dev/ioapic.h:    *(volatile uint32_t *)ioapic->base = reg;
+nase_addr:include/dev/ioapic.h:    *(volatile uint32_t *)(ioapic->base + IOWIN_REG) = val;
+nase_addr:include/dev/ioapic.h:    *(volatile uint32_t *)ioapic->base = reg;
+nase_addr:include/dev/ioapic.h:    return *(volatile uint32_t *)(ioapic->base + IOWIN_REG);
+src/arch/x64/smp.c:    SMP_DEBUG("\tID=0x%x\n", ioapic->id);
+src/arch/x64/smp.c:    SMP_DEBUG("\tVersion=0x%x\n", ioapic->version);
+src/arch/x64/smp.c:    SMP_DEBUG("\tEnabled?=%01d\n", ioapic->enabled);
+src/arch/x64/smp.c:    SMP_DEBUG("\tBase Addr=0x%lx\n", ioapic->addr);
+src/arch/x64/smp.c:    ioa->id      = ioapic->id;
+src/arch/x64/smp.c:    ioa->version = ioapic->version;
+src/arch/x64/smp.c:    ioa->usable  = ioapic->enabled;
+src/arch/x64/smp.c:    ioa->base    = (addr_t)ioapic->addr;
+src/nautilus/smp.c:        apic_ipi(apic, sys->cpus[cpu_id]->apic->id, IPI_VEC_XCALL);
+src/test/ipi.c:    *(volatile uint32_t*)(apic->base_addr + (reg)) = (val);
+src/dev/ioapic.c:    ASSERT(irq < ioapic->num_entries);
+src/dev/ioapic.c:    ioapic->entries[irq].enabled = 0;
+src/dev/ioapic.c:    ASSERT(irq < ioapic->num_entries);
+src/dev/ioapic.c:    ioapic->entries[irq].enabled = 1;
+src/dev/ioapic.c:    ASSERT(irq < ioapic->num_entries);
+src/dev/ioapic.c:        ioapic->base
+src/dev/ioapic.c:    for (pin = 0; pin < ioapic->num_entries; pin++)  {
+src/dev/ioapic.c:    if (nk_map_page_nocache(ROUND_DOWN_TO_PAGE(ioapic->base), PTE_PRESENT_BIT|PTE_WRITABLE_BIT, PS_4K) == -1) {
+src/dev/ioapic.c:    for (i = 0; i < ioapic->num_entries; i++) {
+src/dev/ioapic.c:    ioapic->num_entries = ioapic_get_max_entry(ioapic) + 1;
+src/dev/ioapic.c:    ioapic->entries = malloc(sizeof(struct iored_entry)*ioapic->num_entries);
+src/dev/ioapic.c:    if (!ioapic->entries) {
+src/dev/ioapic.c:    memset(ioapic->entries, 0, sizeof(struct iored_entry)*ioapic->num_entries);
+src/dev/ioapic.c:    IOAPIC_DEBUG("\tMapping at %p\n", (void*)ioapic->base);
+src/dev/ioapic.c:    IOAPIC_DEBUG("\tNum Entries: %u\n", ioapic->num_entries);
+src/dev/ioapic.c:    for (i = 0; i < ioapic->num_entries; i++) {
+src/dev/ioapic.c:        if (ioint->dst_ioapic_id != ioapic->id) {
+src/dev/ioapic.c:                    ioapic->id,
+src/dev/ioapic.c:            struct iored_entry * iored_entry = &(ioapic->entries[ioint->dst_ioapic_intin]);
+src/dev/ioapic.c:    for (i = 0; i < ioapic->num_entries; i++) {
+src/dev/apic.c:    apic->err_int_cnt++;
+src/dev/apic.c:    APIC_DEBUG("Setting up Local APIC timer for APIC 0x%x\n", apic->id);
+src/dev/apic.c:    APIC_DEBUG("Detected APIC 0x%x bus frequency as %u.%u MHz\n", apic->id, busfreq/1000000, busfreq%1000000);
+src/dev/apic.c:        apic->base_addr
+src/dev/apic.c:    apic->base_addr = pa_to_va(base_addr);
+src/dev/apic.c:        if (nk_map_page_nocache(apic->base_addr, PTE_PRESENT_BIT|PTE_WRITABLE_BIT, PS_4K) == -1) {
+src/dev/apic.c:    apic->version   = apic_get_version(apic);
+src/dev/apic.c:    apic->id        = apic_get_id(apic);
+src/dev/apic.c:    if (apic->version < 0x10 || apic->version > 0x15) {
+src/dev/apic.c:        panic("Unsupported APIC version (0x%1x)\n", (unsigned)apic->version);
+include/dev/apic.h:    *((volatile uint32_t *)(apic->base_addr + reg)) = val;
+include/dev/apic.h:    return *((volatile uint32_t *)(apic->base_addr + reg));
+include/dev/ioapic.h:    *(volatile uint32_t *)ioapic->base = reg;
+include/dev/ioapic.h:    *(volatile uint32_t *)(ioapic->base + IOWIN_REG) = val;
+include/dev/ioapic.h:    *(volatile uint32_t *)ioapic->base = reg;
+include/dev/ioapic.h:    return *(volatile uint32_t *)(ioapic->base + IOWIN_REG);

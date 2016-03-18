@@ -372,10 +372,12 @@ void apic_deadline_write(struct apic_dev *apic, uint64_t cycles)
 
 #define TIME_TO_APIC_CYCLES  42
 
-void set_apic_oneshot(struct apic_dev *apic, uint32_t time_us)
+void set_apic_deadline(struct apic_dev *apic, uint64_t tsc_deadline)
 {	
-	apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_ONESHOT);
-	apic_write(apic, APIC_REG_TMICT, time_us * TIME_TO_APIC_CYCLES);
+	apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_TSCDLINE);
+	do {
+		msr_write(IA32_TSCDEADLINE_MSR, tsc_deadline);
+	} while (msr_read(IA32_TSCDEADLINE_MSR) == 0);
 }
 
 int apic_oneshot_read(struct apic_dev *apic)

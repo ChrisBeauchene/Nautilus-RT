@@ -348,10 +348,10 @@ void disable_apic_timer(struct apic_dev *apic)
 {
 	apic_write(apic, APIC_REG_LVTT, APIC_TIMER_DISABLE);
 }
-
-void apic_oneshot_write(struct apic_dev *apic, uint32_t time_us)
+void set_apic_deadline(struct apic_dev *apic, uint64_t tsc_deadline);
+void apic_oneshot_write(struct apic_dev *apic, uint64_t time_us)
 {
-	apic_deadline_write(apic, time_us);
+	set_apic_deadline(apic, time_us);
 	// uint8_t flags = irq_disable_save();
     	// double us = (double)time_us / 390000000;
     	// uint32_t busfreq = 1100000000;
@@ -373,10 +373,11 @@ void apic_deadline_write(struct apic_dev *apic, uint64_t cycles)
 #define TIME_TO_APIC_CYCLES  42
 
 void set_apic_deadline(struct apic_dev *apic, uint64_t tsc_deadline)
-{	
+{
+	APIC_DEBUG("Data at APIC_BASE_MSR is %llu\n", msr_read(APIC_BASE_MSR));	
 	apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_TSCDLINE);
 	do {
-		msr_write(IA32_TSCDEADLINE_MSR, tsc_deadline);
+		msr_write(IA32_TSCDEADLINE_MSR, 0xFFFFFFFFFFFFFFFF);
 	} while (msr_read(IA32_TSCDEADLINE_MSR) == 0);
 }
 

@@ -45,7 +45,7 @@
 #define SCHEDULER 3
 
 // UTILIZATION FACTOR LIMITS
-#define PERIODIC_UTIL 0.7
+#define PERIODIC_UTIL 1.0
 #define SPORADIC_UTIL 0.2
 #define APERIODIC_UTIL 0.1
 
@@ -764,39 +764,44 @@ void nk_rt_test()
 	nk_thread_id_t v;
 	nk_thread_id_t w;
 	nk_thread_id_t x;
+	nk_thread_id_t y;
 
 
 
 	rt_constraints *constraints_first = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr_first = {(100000000000), (10000000000), 0, 40};
+	struct periodic_constraints per_constr_first = {(10000000000), (1000000000), 0, 40};
 	constraints_first->periodic = per_constr_first;
 
 	rt_constraints *constraints_second = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr_second = {(50000000000), (5000000000), 0, 40};
+	struct periodic_constraints per_constr_second = {(5000000000), (500000000), 0, 40};
 	constraints_second->periodic = per_constr_second;
 
 	rt_constraints *constraints_third = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr_third = {(2500000000), (250000000), 0, 40};
+	struct periodic_constraints per_constr_third = {(250000000), (25000000), 0, 40};
 	constraints_third->periodic = per_constr_third;
 
 	rt_constraints *constraints_fifth = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr_fifth = {(50000000000), (5000000000), 0, 40};
+	struct periodic_constraints per_constr_fifth = {(5000000000), (750000000), 0, 40};
 	constraints_fifth->periodic = per_constr_fifth;
 
 	rt_constraints *constraints_six = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr_six = {(50000000000), (5000000000), 0, 40};
+	struct periodic_constraints per_constr_six = {(5000000000), (1000000000), 0, 40};
 	constraints_six->periodic = per_constr_six;
 
 	rt_constraints *constraints_seven = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr_seven = {(50000000000), (5000000000), 0, 40};
+	struct periodic_constraints per_constr_seven = {(5000000000), (1000000000), 0, 40};
 	constraints_seven->periodic = per_constr_seven;	
 	
 	rt_constraints *constraints_fourth = (rt_constraints *)malloc(sizeof(rt_constraints));
 	struct aperiodic_constraints aper_constr = {2};
 	constraints_fourth->aperiodic = aper_constr;
-
+	
+	rt_constraints *constraints_eighth = (rt_constraints *)malloc(sizeof(rt_constraints));
+	struct periodic_constraints per_constr_eighth = {(5000000000), (500000000), 0, 40};
+	constraints_eighth->periodic = per_constr_eighth;
+	
 	RT_DEBUG_PRINT("ABOUT TO START TEST.\n");
-	uint64_t first = 1, second = 2, third = 3, fourth = 4, five = 5, six = 6, seven = 7;
+	uint64_t first = 1, second = 2, third = 3, fourth = 4, five = 5, six = 6, seven = 7, eight = 8;
 	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)first, NULL, 0, 0, &r, my_cpu_id(), PERIODIC, constraints_first, 0);
 	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)second, NULL, 0, 0, &s, my_cpu_id(), PERIODIC, constraints_second, 0);
 	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)third, NULL, 0, 0, &t, my_cpu_id(), PERIODIC, constraints_third, 0);	
@@ -804,7 +809,7 @@ void nk_rt_test()
 	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)six, NULL, 0, 0, &w, my_cpu_id(), PERIODIC, constraints_six, 0);
 	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)seven, NULL, 0, 0, &x, my_cpu_id(), PERIODIC, constraints_seven, 0);
 	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)fourth, NULL, 0, 0, &u, my_cpu_id(), APERIODIC, constraints_fourth, 0);
-	
+	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)eight, NULL, 0, 0, &y, my_cpu_id(), PERIODIC, constraints_eighth, 0);	
 	nk_join(r, NULL);
 	nk_join(s, NULL);
 	nk_join(t, NULL);	
@@ -812,6 +817,7 @@ void nk_rt_test()
 	nk_join(v, NULL);
 	nk_join(w, NULL);
 	nk_join(x, NULL);
+	nk_join(y, NULL);
 
 
 

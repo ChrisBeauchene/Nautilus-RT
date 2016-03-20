@@ -400,13 +400,8 @@ struct nk_thread *rt_need_resched()
     rt_scheduler *scheduler = sys->cpus[my_cpu_id()]->rt_sched;
     struct nk_thread *c = get_cur_thread();
     rt_thread *rt_c = c->rt_thread;
-<<<<<<< HEAD
     
     printk("RT_NEED_RESCHED TIME: %llu\n DIFFERENCE IS: %llu\n AND TIME SET TO %llu\n", cur_time(), cur_time() - scheduler->tsc->start_time, scheduler->tsc->set_time);
-=======
-    printk("Starting rt_need_resched()\n"); 
-    RT_SCHED_DEBUG("RT_NEED_RESCHED TIME: %llu\n DIFFERENCE IS: %llu\n AND TIME SET TO %llu\n", cur_time(), cur_time() - scheduler->tsc->start_time, scheduler->tsc->set_time);
->>>>>>> master
     if (rt_c)
     {
 	rt_c->exit_time = cur_time();
@@ -506,7 +501,6 @@ struct nk_thread *rt_need_resched()
 		RT_SCHED_DEBUG("PERIODIC\n");	
             update_exit(rt_c);
             if (rt_c->run_time >= rt_c->constraints->periodic.slice) {
-<<<<<<< HEAD
                 if (check_deadlines(rt_c))
 		{
 			update_periodic(rt_c);
@@ -518,10 +512,6 @@ struct nk_thread *rt_need_resched()
 		// printk("PERIODIC TASK %llu finished and met deadline %llu at time %llu\n", rt_c->thread->tid, rt_c->deadline, cur_time());
                 // If we haven't passsed the deadline then we just enqueue onto the pending queue and the
                     // old deadline becomes the new "arrival" time.
-=======
-                check_deadlines(rt_c);
-                enqueue_thread(scheduler->pending, rt_c);
->>>>>>> master
                 if (scheduler->runnable->size > 0) {
                     rt_n = dequeue_thread(scheduler->runnable);
                     update_enter(rt_n);
@@ -793,7 +783,6 @@ void nk_rt_test()
 
 
 	rt_constraints *constraints_first = (rt_constraints *)malloc(sizeof(rt_constraints));
-<<<<<<< HEAD
 	struct periodic_constraints per_constr_first = {(100000000), (10000000), 0, 40};
 	constraints_first->periodic = per_constr_first;
 
@@ -815,29 +804,6 @@ void nk_rt_test()
 
 	rt_constraints *constraints_seven = (rt_constraints *)malloc(sizeof(rt_constraints));
 	struct periodic_constraints per_constr_seven = {(50000000), (5000000), 0, 40};
-=======
-	struct periodic_constraints per_constr_first = {(10000000000), (1000000000), 0, 40};
-	constraints_first->periodic = per_constr_first;
-
-	rt_constraints *constraints_second = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr_second = {(5000000000), (500000000), 0, 40};
-	constraints_second->periodic = per_constr_second;
-
-	rt_constraints *constraints_third = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr_third = {(250000000), (25000000), 0, 40};
-	constraints_third->periodic = per_constr_third;
-
-	rt_constraints *constraints_fifth = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr_fifth = {(5000000000), (750000000), 0, 40};
-	constraints_fifth->periodic = per_constr_fifth;
-
-	rt_constraints *constraints_six = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr_six = {(5000000000), (1000000000), 0, 40};
-	constraints_six->periodic = per_constr_six;
-
-	rt_constraints *constraints_seven = (rt_constraints *)malloc(sizeof(rt_constraints));
-	struct periodic_constraints per_constr_seven = {(5000000000), (1000000000), 0, 40};
->>>>>>> master
 	constraints_seven->periodic = per_constr_seven;	
 	
 	rt_constraints *constraints_fourth = (rt_constraints *)malloc(sizeof(rt_constraints));

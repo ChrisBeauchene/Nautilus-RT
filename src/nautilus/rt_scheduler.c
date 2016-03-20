@@ -574,12 +574,14 @@ struct nk_thread *rt_need_resched()
 
 static inline void update_exit(rt_thread *t)
 {
+    printk("exiting thread %d\n", t->thread->tid);
     // CUR TIME
     t->run_time += (t->exit_time - t->start_time);
 }      
 
 static inline void update_enter(rt_thread *t)
 {
+    printk("Entering thread %d\n", t->thread->tid);
     t->start_time = cur_time();
 }      
 

@@ -351,7 +351,7 @@ void disable_apic_timer(struct apic_dev *apic)
 void set_apic_deadline(struct apic_dev *apic, uint64_t tsc_deadline);
 void apic_oneshot_write(struct apic_dev *apic, uint64_t time_us)
 {
-	set_apic_deadline(apic, time_us);
+	apic_deadline_write(apic, time_us);
 	// uint8_t flags = irq_disable_save();
     	// double us = (double)time_us / 390000000;
     	// uint32_t busfreq = 1100000000;
@@ -367,7 +367,7 @@ void apic_deadline_write(struct apic_dev *apic, uint64_t cycles)
 {
 	apic_write(apic, APIC_REG_TMICT, (cycles - 200000) / 42);
 	apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_TSCDLINE);
-	APIC_DEBUG("TIME IN APIC DEADLINE WRITE IS: %llu\n", rdtsc());
+	APIC_DEBUG("TIME IN APIC DEADLINE WRITE IS: %d\n", (cycles - 200000) / 42);
 }
 
 #define TIME_TO_APIC_CYCLES  42

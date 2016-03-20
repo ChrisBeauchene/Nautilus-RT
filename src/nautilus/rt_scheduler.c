@@ -353,6 +353,7 @@ void rt_thread_dump(rt_thread *thread)
 
 static void set_timer(rt_scheduler *scheduler, rt_thread *current_thread)
 {
+    printk("Setting timer.\n");
     scheduler->tsc->start_time = cur_time();
     struct sys_info *sys = per_cpu_get(system);
     struct apic_dev *apic = sys->cpus[my_cpu_id()]->apic;
@@ -399,7 +400,7 @@ struct nk_thread *rt_need_resched()
     rt_scheduler *scheduler = sys->cpus[my_cpu_id()]->rt_sched;
     struct nk_thread *c = get_cur_thread();
     rt_thread *rt_c = c->rt_thread;
-    
+    printk("Starting rt_need_resched()\n"); 
     RT_SCHED_DEBUG("RT_NEED_RESCHED TIME: %llu\n DIFFERENCE IS: %llu\n AND TIME SET TO %llu\n", cur_time(), cur_time() - scheduler->tsc->start_time, scheduler->tsc->set_time);
     if (rt_c)
     {
@@ -453,12 +454,12 @@ struct nk_thread *rt_need_resched()
                 rt_n = dequeue_thread(scheduler->runnable);
 		update_enter(rt_n);
                 set_timer(scheduler, rt_n);
-		printk("Running periodic task %d with deadline %llu\n", rt_n->thread->tid - 1, rt_n->deadline);
+		// printk("Running periodic task %d with deadline %llu\n", rt_n->thread->tid - 1, rt_n->deadline);
                 return rt_n->thread;
             }
 	    enqueue_thread(scheduler->aperiodic, rt_c);
             set_timer(scheduler, scheduler->main_thread);
-	    printk("Running scheduler.\n");
+	    // printk("Running scheduler.\n");
             return scheduler->main_thread->thread;
             break;
  
@@ -551,7 +552,7 @@ struct nk_thread *rt_need_resched()
 
 	default:
 		set_timer(scheduler, rt_c);
-		printk("Nothing to run. Reinvoking scheduler.\n");
+		// printk("Nothing to run. Reinvoking scheduler.\n");
 		// RT_SCHED_DEBUG("NO REAL_TIME THREAD ATTACHED TO CURRENT THREAD!!\n");
 		return c;
  	}
@@ -803,6 +804,7 @@ void nk_rt_test()
 	RT_DEBUG_PRINT("ABOUT TO START TEST.\n");
 	uint64_t first = 1, second = 2, third = 3, fourth = 4, five = 5, six = 6, seven = 7, eight = 8;
 	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)first, NULL, 0, 0, &r, my_cpu_id(), PERIODIC, constraints_first, 0);
+	printk("Starting the second thread.\n");
 	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)second, NULL, 0, 0, &s, my_cpu_id(), PERIODIC, constraints_second, 0);
 	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)third, NULL, 0, 0, &t, my_cpu_id(), PERIODIC, constraints_third, 0);	
 	nk_thread_start((nk_thread_fun_t)test_real_time, (void *)five, NULL, 0, 0, &v, my_cpu_id(), PERIODIC, constraints_fifth, 0);

@@ -209,9 +209,9 @@ struct apic_dev {
 static inline void
 apic_write (struct apic_dev * apic, 
             uint_t reg, 
-            uint32_t val)
+            uint64_t val)
 {
-    *((volatile uint32_t *)(apic->base_addr + reg)) = val;
+    *((volatile uint64_t *)(apic->base_addr + reg)) = val;
 }
 
 static inline void 
@@ -231,10 +231,10 @@ apic_tsc_read( struct apic_dev *apic,
 	return msr_read(msr_read(MSR_GS_BASE) + reg);
 	// return *((volatile uint64_t *)(reg));
 }
-static inline uint32_t
+static inline uint64_t
 apic_read (struct apic_dev * apic, uint_t reg)
 {
-    return *((volatile uint32_t *)(apic->base_addr + reg));
+    return *((volatile uint64_t *)(apic->base_addr + reg));
 }
 
 
@@ -276,7 +276,7 @@ int apic_read_timer(struct apic_dev * apic);
 uint32_t apic_wait_for_send(struct apic_dev* apic);
 
 void disable_apic_timer(struct apic_dev *apic);
-void apic_oneshot_write(struct apic_dev *apic, uint32_t time_us);
+void apic_oneshot_write(struct apic_dev *apic, uint64_t time_us);
 void apic_deadline_write(struct apic_dev *apic, uint64_t cycles);
 int apic_oneshot_read(struct apic_dev *apic);
 

@@ -351,18 +351,13 @@ void disable_apic_timer(struct apic_dev *apic)
 
 void apic_oneshot_write(struct apic_dev *apic, uint32_t time_us)
 {
-	apic_deadline_write(apic, time_us);
-	// uint8_t flags = irq_disable_save();
-    	// double us = (double)time_us / 390000000;
-    	// uint32_t busfreq = 1100000000;
-    	// APIC_DEBUG("Detected APIC 0x%x bus frequency as %u.%u MHz\n", apic->id, busfreq/1000000, busfreq%1000000);
-	// APIC_DEBUG("VALUE OF %u WROTE TO APIC,\n", time_us);
-   	// uint32_t tmp = (busfreq * (1000000 * us)) / APIC_TIMER_DIV;
-	// apic_write(apic, APIC_REG_TMICT, tmp);
-	// apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_ONESHOT);
-	// irq_enable_restore(flags);
+	if (time_us) 
+	{
+		time_us = (((110000000 * (uint64_t)time_us) / 380000000) / APIC_TIMER_DIV);
+		apic_write(apic, APIC_REG_TMICT, time_us);
+		apic_write(apic, APIC_REG_LVTT, APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_ONESHOT);			
+	}
 }
-
 void apic_deadline_write(struct apic_dev *apic, uint64_t cycles)
 {
 	apic_write(apic, APIC_REG_TMICT, (cycles - 200000) / 42);

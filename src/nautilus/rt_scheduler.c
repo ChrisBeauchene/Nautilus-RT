@@ -5,12 +5,16 @@
 //  Created by Chris Beauchene on 2/15/16.
 //  Copyright © 2016 EECS 395/495 Kernel Development. All rights reserved.
 //
+//
+
+
 
 #include <nautilus/nautilus.h>
 #include <nautilus/thread.h>
 #include <nautilus/rt_scheduler.h>
 #include <nautilus/irq.h>
 #include <nautilus/cpu.h>
+#include <nautilus/cpuid.h>
 #include <dev/apic.h>
 #include <dev/timer.h>
 
@@ -45,9 +49,9 @@
 #define SCHEDULER 3
 
 // UTILIZATION FACTOR LIMITS
-#define PERIODIC_UTIL 1.0
-#define SPORADIC_UTIL 0.2
-#define APERIODIC_UTIL 0.1
+#define PERIODIC_UTIL 70000
+#define SPORADIC_UTIL 20000
+#define APERIODIC_UTIL 10000
 
 // Statuses
 #define CREATED 0
@@ -76,10 +80,9 @@ static inline void update_periodic(rt_thread *t);
 // Admission Control Functions
 
 static inline uint64_t get_min_per(rt_queue *runnable, rt_queue *queue, rt_thread *thread);
-static inline double get_avg_per(rt_queue *runnable, rt_queue *pending, rt_thread *thread);
-static inline double get_per_util(rt_queue *runnable, rt_queue *pending);
-static inline double get_spor_util(rt_queue *runnable);
-
+static inline uint64_t get_avg_per(rt_queue *runnable, rt_queue *pending, rt_thread *thread);
+static inline uint64_t get_per_util(rt_queue *runnable, rt_queue *pending);
+static inline uint64_t get_spor_util(rt_queue *runnable);
 static inline uint64_t umin(uint64_t x, uint64_t y);
 /********** Function definitions *************/
 
@@ -114,7 +117,6 @@ rt_thread* rt_thread_init(int type,
     return t;
 }
 
-// Called inside of nk_sched_init if NAUT_CONFIG_USE_RT_SCHEDULER is set to tru
 rt_scheduler* rt_scheduler_init(rt_thread *main_thread)
 {
     rt_scheduler* scheduler = (rt_scheduler *)malloc(sizeof(rt_scheduler));
@@ -146,15 +148,6 @@ rt_scheduler* rt_scheduler_init(rt_thread *main_thread)
 
 void enqueue_thread(rt_queue *queue, rt_thread *thread)
 {
-    // CHECK IF JOB IS PERIODIC OR SPORADIC AND DO ADMISSION CONTROL HERE
-        // IF THE ADMISSION CONTROL RETURNS FALSE THEN WE WANT JUST RETURN
-        // OUT OF THIS FUNCTION
-    
-    // 1. RUN QUEUE  - DEADLINE DETERMINED POSITION IN QUEUE
-    // 2. PENDING QUEUE - ARRIVAL DETERMINED POSITION IN QUEUE
-    // 3. APERIODIC QUEUE - PRIORITY POSITION IN QUEUE
-    
-    // 1. RUN QUEUE
     if (queue->type == RUNNABLE_QUEUE)
     {
         if (queue->size == MAX_QUEUE)
@@ -172,16 +165,7 @@ void enqueue_thread(rt_queue *queue, rt_thread *thread)
         }
         queue->threads[pos] = thread;
         
-    }
-    
-    // 2. PENDING QUEUE
-    //      - NEED TO UPDATE BEFORE WE TRY TO ENQUEUE
-    //      - THIS IS CRITICAL. OTHERWISE WE WILL BE DEQUEUEING FROM THE RUN QUEUE
-    //        AND THEN WITHOUT UPDATING THE DEADLINE WE WILL INEVITABLE FAIL TO MEET
-    //        SOME HARD TIME CONTRAINTS WITHOUT UPDATING.
-    //      - CALL FUNCTION
-    
-    else if (queue->type == PENDING_QUEUE)
+    } else if (queue->type == PENDING_QUEUE)
     {
         if (queue->size == MAX_QUEUE)
         {
@@ -219,11 +203,6 @@ void enqueue_thread(rt_queue *queue, rt_thread *thread)
 
 rt_thread* dequeue_thread(rt_queue *queue)
 {
-    // Do some check here to make sure tha
-    
-    // 1. RUN QUEUE
-    //      - Use deadline as metric
-    
     if (queue->type == RUNNABLE_QUEUE)
     {
         if (queue->size < 1)
@@ -293,9 +272,7 @@ rt_thread* dequeue_thread(rt_queue *queue)
         queue->threads[now] = last;
         
         return min;
-    }
-    
-    else if (queue->type == APERIODIC_QUEUE)
+    } else if (queue->type == APERIODIC_QUEUE)
     {
         if (queue->size < 1)
         {
@@ -337,7 +314,7 @@ void rt_thread_dump(rt_thread *thread)
     if (thread->type == PERIODIC)
     {
         RT_SCHED_DEBUG("Slice: %llu\t\t Period: %llu\t\t\n", thread->constraints->periodic.slice, thread->constraints->periodic.period);
-        RT_SCHED_DEBUG("Utilization contribution: %lfu\n\n", (double)thread->constraints->periodic.slice / thread->constraints->periodic.period);
+        RT_SCHED_DEBUG("Utilization contribution: %lluu\n\n", (thread->constraints->periodic.slice * 100000) / thread->constraints->periodic.period);
     } else if (thread->type == SPORADIC)
     {
         RT_SCHED_DEBUG("Work: %llu\t\t", thread->constraints->sporadic.work);
@@ -397,30 +374,19 @@ static void set_timer(rt_scheduler *scheduler, rt_thread *current_thread)
 struct nk_thread *rt_need_resched()
 {
     struct sys_info *sys = per_cpu_get(system);
-    rt_scheduler *scheduler = sys->cpus[my_cpu_id()]->rt_sched;
-    struct nk_thread *c = get_cur_thread();
+	rt_scheduler *scheduler = sys->cpus[my_cpu_id()]->rt_sched;
+    
+	struct nk_thread *c = get_cur_thread();
     rt_thread *rt_c = c->rt_thread;
     
-    printk("RT_NEED_RESCHED TIME: %llu\n DIFFERENCE IS: %llu\n AND TIME SET TO %llu\n", cur_time(), cur_time() - scheduler->tsc->start_time, scheduler->tsc->set_time);
-    if (rt_c)
-    {
-	rt_c->exit_time = cur_time();
+    if (rt_c) {
+		rt_c->exit_time = cur_time();
     }
 	
 	scheduler->tsc->end_time = cur_time();
 
     rt_thread *rt_n;
-    // RT_SCHED_DEBUG("INSIDE OF RT_NEED_RESCHED()\n"); 
-    // RT_SCHED_DEBUG("CURRENT THREAD ID: %d\n", c->tid);
-    // REQUIRES NAUTILUS
-    
-    // First we need to check to see if any new jobs have arrived
-        // while current_time > PQ[0] we dequeue from the pending queue, update the period,
-        // and enqueue onto the runnable queue
-    // CHECK TO SEE IF THREADS HAVE ARRIVED!!!!
 
-    
-    
     while (scheduler->pending->size > 0)
     {
         if (scheduler->pending->threads[0]->deadline < cur_time())
@@ -435,16 +401,8 @@ struct nk_thread *rt_need_resched()
         }
     }
     
-    // FIRST WE CHECK TO SEE IF THE THREAD HAS FINISHED RUNNING
-        // THEN WE WANT TO SEE IF THEIR IS A HIGHER PRIORITY RUNNABLE THREAD
-        // IF THERE IS NOT WE WANT TO SEE IF WE CAN CONTINUE RUNNING
-        // IF WE CAN"T WE PUT WHATEVER NEXT RUNNABLE THREAD THERE IS
-        // ELSE IF WE ARE DONE AND THERE ARE NO RUNNABLE THREADS
-        // RUN AN APERIODIC THREAD
-    
     switch (rt_c->type) {
         case APERIODIC:
-	RT_SCHED_DEBUG("APERIODIC\n");
             update_exit(rt_c);
             rt_c->constraints->aperiodic.priority = rt_c->run_time;
             
@@ -452,14 +410,12 @@ struct nk_thread *rt_need_resched()
             {
                 enqueue_thread(scheduler->aperiodic, rt_c);
                 rt_n = dequeue_thread(scheduler->runnable);
-		update_enter(rt_n);
+				update_enter(rt_n);
                 set_timer(scheduler, rt_n);
-		// printk("Running periodic task %d with deadline %llu\n", rt_n->thread->tid - 1, rt_n->deadline);
                 return rt_n->thread;
             }
-	    enqueue_thread(scheduler->aperiodic, rt_c);
+			enqueue_thread(scheduler->aperiodic, rt_c);
             set_timer(scheduler, scheduler->main_thread);
-	    // printk("Running scheduler.\n");
             return scheduler->main_thread->thread;
             break;
  
@@ -480,7 +436,7 @@ struct nk_thread *rt_need_resched()
                      {
                          check_deadlines(rt_c);
                          rt_n = dequeue_thread(scheduler->runnable);
-			 update_enter(rt_n);
+						 update_enter(rt_n);
                          set_timer(scheduler, rt_n);
                          return rt_n->thread;
                      }
@@ -498,84 +454,63 @@ struct nk_thread *rt_need_resched()
             break;
  
         case PERIODIC:
-		RT_SCHED_DEBUG("PERIODIC\n");	
             update_exit(rt_c);
             if (rt_c->run_time >= rt_c->constraints->periodic.slice) {
-                if (check_deadlines(rt_c))
-		{
-			update_periodic(rt_c);
-			enqueue_thread(scheduler->runnable, rt_c);
-		} else
-		{
+                if (check_deadlines(rt_c)) {
+					update_periodic(rt_c);
+					enqueue_thread(scheduler->runnable, rt_c);
+		} else {
 			enqueue_thread(scheduler->pending, rt_c);
 		}
-		// printk("PERIODIC TASK %llu finished and met deadline %llu at time %llu\n", rt_c->thread->tid, rt_c->deadline, cur_time());
-                // If we haven't passsed the deadline then we just enqueue onto the pending queue and the
-                    // old deadline becomes the new "arrival" time.
                 if (scheduler->runnable->size > 0) {
                     rt_n = dequeue_thread(scheduler->runnable);
                     update_enter(rt_n);
-		    printk("Running periodic task %d with deadline %llu\n", rt_n->thread->tid - 1, rt_n->deadline);
-		    set_timer(scheduler, rt_n);
+					set_timer(scheduler, rt_n);
                     return rt_n->thread;
                 }
-		printk("Running scheduler.\n");    
-		set_timer(scheduler, scheduler->main_thread);
+
+				set_timer(scheduler, scheduler->main_thread);
                 return scheduler->main_thread->thread; 
             } else {
                 if (scheduler->runnable->size > 0)
                 {
-                    // If a thread is available with an earlier deadline switch to it.
                     if (rt_c->deadline > scheduler->runnable->threads[0]->deadline) {
                         rt_n = dequeue_thread(scheduler->runnable);
                         enqueue_thread(scheduler->runnable, rt_c);
                         update_enter(rt_n);
-			set_timer(scheduler, rt_n);
+						set_timer(scheduler, rt_n);
                         return rt_n->thread;
                     }
                 }
             }
             update_enter(rt_c);
-	    set_timer(scheduler, rt_c);
+			set_timer(scheduler, rt_c);
             return rt_c->thread;
             break;
 	case SCHEDULER:
-	printk("SCHEDULER\n");
-            if (scheduler->runnable->size > 0)
-            {
+            if (scheduler->runnable->size > 0) {
                 rt_n = dequeue_thread(scheduler->runnable);
                 update_enter(rt_n);
                 set_timer(scheduler, rt_n);
-		printk("Running periodic task %d with deadline %llu\n", rt_n->thread->tid - 1, rt_n->deadline);
-		// RT_SCHED_DEBUG("NEXT THREAD TO ENTER HAS DEADLINE OF %llu\n", rt_n->deadline);
                 return rt_n->thread;
             }
-            if (scheduler->aperiodic->size > 0)
-            {
+            if (scheduler->aperiodic->size > 0) {
                 rt_n = dequeue_thread(scheduler->aperiodic);
                 update_enter(rt_n);
-		set_timer(scheduler, rt_n);
-		printk("Running aperiodic task. All periodic tasks in pending queue.\n");
+				set_timer(scheduler, rt_n);
                 return rt_n->thread;
             }
 
 	default:
 		set_timer(scheduler, rt_c);
-		// printk("Nothing to run. Reinvoking scheduler.\n");
-		// RT_SCHED_DEBUG("NO REAL_TIME THREAD ATTACHED TO CURRENT THREAD!!\n");
 		return c;
  	}
    
 }
  
-
-
-// NEED cur_time()
-
 static inline void update_exit(rt_thread *t)
 {
     printk("exiting thread %d\n", t->thread->tid);
-    // CUR TIME
     t->run_time += (t->exit_time - t->start_time);
 }      
 
@@ -588,10 +523,11 @@ static inline void update_enter(rt_thread *t)
 static inline int check_deadlines(rt_thread *t)
 {
     if (cur_time() > t->deadline) {
-	RT_SCHED_ERROR("Missed Deadline = %llu\t\t Current Timer = %llu\n", t->deadline, t->exit_time);
+		RT_SCHED_ERROR("Missed Deadline = %llu\t\t Current Timer = %llu\n", t->deadline, t->exit_time);
         RT_SCHED_ERROR("Difference =  %llu\n", t->exit_time - t->deadline);
-	return 1;
+		return 1;
     }
+
     return 0;
 }
 
@@ -621,11 +557,11 @@ int rt_admit(rt_scheduler *scheduler, rt_thread *thread)
     if (thread->type == PERIODIC)
     {
         uint64_t min_period = (get_min_per(scheduler->runnable, scheduler->pending, thread) / 2.0);
-        double sched_util = (double)scheduler->run_time / min_period;
-        double per_util = get_per_util(scheduler->runnable, scheduler->pending) + sched_util;
-        RT_SCHED_DEBUG("UTIL FACTOR =  \t%f\n", (float)per_util);
+        uint64_t sched_util= (scheduler->run_time * 100000) / min_period;
+        uint64_t per_util = get_per_util(scheduler->runnable, scheduler->pending) + sched_util;
+        printk("UTIL FACTOR =  \t%llu\n", per_util);
         
-        if ((per_util + (((double)thread->constraints->periodic.slice) / (double)thread->constraints->periodic.period)) > PERIODIC_UTIL) {
+        if ((per_util + (thread->constraints->periodic.slice * 100000) / thread->constraints->periodic.period) > PERIODIC_UTIL) {
             RT_SCHED_ERROR("PERIODIC: Admission denied utilization factor overflow!\n");
             return 0;
         }
@@ -637,30 +573,34 @@ int rt_admit(rt_scheduler *scheduler, rt_thread *thread)
         }
     } else if (thread->type == SPORADIC)
     {
-	uint64_t min_period = (get_min_per(scheduler->runnable, scheduler->pending, thread) / 2.0);
-	double sched_util = (double)scheduler->run_time / min_period;
-        double per_util = get_per_util(scheduler->runnable, scheduler->pending) + sched_util;
+		uint64_t spor_util = get_spor_util(scheduler->runnable);
 
-        if (((double)thread->constraints->sporadic.work / (1 - per_util)) < (thread->deadline)) {
+        if (spor_util > SPORADIC_UTIL) {
             RT_SCHED_DEBUG("SPORADIC: Admission denied utilization factor overflow!\n");
             return 0;
         }
+
+		if (thread->constraints->sporadic.work > (thread->deadline - cur_time() - scheduler->run_time)) {
+			RT_SCHED_DEBUG("SPORADIC: Time to reach first deadline is unachievable. Denied.\n");
+			return 0;
+		}
     }
 
     RT_SCHED_DEBUG("Slice of thread is %f\n", (double)thread->constraints->periodic.slice);
     return 1;
 }
 
-static inline double get_avg_per(rt_queue *runnable, rt_queue *pending, rt_thread *thread)
+static inline uint64_t get_avg_per(rt_queue *runnable, rt_queue *pending, rt_thread *new_thread)
 {
-    double sum_period = 0;
+    uint64_t sum_period = 0;
     uint64_t num_periodic = 0;
     int i;
+
     for (i = 0; i < runnable->size; i++)
     {
         rt_thread *thread = runnable->threads[i];
         if (thread->type == PERIODIC) {
-            sum_period += (double)thread->constraints->periodic.period;
+            sum_period += thread->constraints->periodic.period;
             num_periodic++;
         }
     }
@@ -669,25 +609,25 @@ static inline double get_avg_per(rt_queue *runnable, rt_queue *pending, rt_threa
     {
         rt_thread *thread = pending->threads[i];
         if (thread->type == PERIODIC) {
-            sum_period += (double)thread->constraints->periodic.period;
+            sum_period += thread->constraints->periodic.period;
             num_periodic++;
         }
     }
 	
-    if (thread->type == PERIODIC) 
+    if (new_thread->type == PERIODIC) 
     {
-	sum_period += (double)thread->constraints->periodic.period;
-	num_periodic++;
+		sum_period += new_thread->constraints->periodic.period;
+		num_periodic++;
     }
 
-    sum_period += (double)QUANTUM;
+    sum_period += QUANTUM;
     num_periodic++;
     return (sum_period / num_periodic);
 }
 
 static inline uint64_t get_min_per(rt_queue *runnable, rt_queue *pending, rt_thread *thread)
 {
-	uint64_t min_period = 0xFFFFFFFFFFFFFFFF;
+	uint64_t min_period = UINT64_MAX;
 	int i;
 	for (i = 0; i < runnable->size; i++)
 	{
@@ -709,16 +649,16 @@ static inline uint64_t get_min_per(rt_queue *runnable, rt_queue *pending, rt_thr
 	return min_period;
 }
 
-static inline double get_per_util(rt_queue *runnable, rt_queue *pending)
+static inline uint64_t get_per_util(rt_queue *runnable, rt_queue *pending)
 {
-    double util = 0.0;
+    uint64_t util = 0;
     
     int i;
     for (i = 0; i < runnable->size; i++)
     {
         rt_thread *thread = runnable->threads[i];
         if (thread->type == PERIODIC) {
-            util += ((double)thread->constraints->periodic.slice / (double)thread->constraints->periodic.period);
+            util += (thread->constraints->periodic.slice * 100000) / thread->constraints->periodic.period;
         }
     }
     
@@ -726,16 +666,16 @@ static inline double get_per_util(rt_queue *runnable, rt_queue *pending)
     {
         rt_thread *thread = pending->threads[i];
         if (thread->type == PERIODIC) {
-            util += ((double)thread->constraints->periodic.slice / (double)thread->constraints->periodic.period);
+            util += (thread->constraints->periodic.slice * 100000) / thread->constraints->periodic.period;
         }
     }
     
     return util;
 }
 
-static inline double get_spor_util(rt_queue *runnable)
+static inline uint64_t get_spor_util(rt_queue *runnable)
 {
-    double util = 0.0;
+    uint64_t util = 0;
     
     int i;
     for (i = 0; i < runnable->size; i++)
@@ -743,7 +683,7 @@ static inline double get_spor_util(rt_queue *runnable)
         rt_thread *thread = runnable->threads[i];
         if (thread->type == SPORADIC)
         {
-            util += ((double)thread->constraints->sporadic.work / ((double)thread->deadline - (double)cur_time()));
+            util += (thread->constraints->sporadic.work * 100000) / (thread->deadline - cur_time());
         }
     }
     return util;

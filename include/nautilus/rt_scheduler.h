@@ -42,6 +42,11 @@ struct aperiodic_constraints {
     uint64_t priority;
 };
 
+typedef struct ratio {
+	uint64_t numerator;
+	uint64_t denominator;
+} ratio;
+
 typedef union rt_constraints {
     struct periodic_constraints     periodic;
     struct sporadic_constraints     sporadic;
@@ -126,6 +131,8 @@ nk_thread_t * nk_rt_need_resched();
 */
 
 /* ADMISSION CONTROL */
+
+
 
 int rt_admit(rt_scheduler *scheduler, rt_thread *thread);
 

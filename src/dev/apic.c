@@ -155,6 +155,16 @@ check_apic_avail (void)
     return flags->edx.apic;
 }
 
+uint8_t 
+check_apic_tsc_deadline (void)
+{
+	cpuid_ret_t cp;
+	struct cpuid_feature_flags *flags;
+	cpuid(CPUID_FEATURE_INFO, &cp);
+	flags = (struct cpuid_feature_flags *)&cp.c;
+	return flags->ecx.tsc_dline;
+}
+
 
 static uint8_t
 apic_is_bsp (struct apic_dev * apic)
@@ -360,20 +370,19 @@ void apic_oneshot_write(struct apic_dev *apic, uint64_t time_us)
 }
 void apic_deadline_write(struct apic_dev *apic, uint64_t cycles)
 {
-	apic_write(apic, APIC_REG_TMICT, (cycles - 200000) / 42);
+	apic_write(apic, APIC_REG_TMICT, 0xFFFFFFFFFFFFFFFF);
 	apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_TSCDLINE);
-	APIC_DEBUG("TIME IN APIC DEADLINE WRITE IS: %d\n", (cycles - 200000) / 42);
 }
 
 #define TIME_TO_APIC_CYCLES  42
 
 void set_apic_deadline(struct apic_dev *apic, uint64_t tsc_deadline)
 {
-	APIC_DEBUG("Data at APIC_BASE_MSR is %llu\n", msr_read(APIC_BASE_MSR));	
-	apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_TSCDLINE);
-	do {
-		msr_write(IA32_TSCDEADLINE_MSR, 0xFFFFFFFFFFFFFFFF);
-	} while (msr_read(IA32_TSCDEADLINE_MSR) == 0);
+	//APIC_DEBUG("Data at APIC_BASE_MSR is %llu\n", msr_read(APIC_BASE_MSR));	
+	//apic_write(apic, APIC_REG_LVTT, 0 | APIC_DEL_MODE_FIXED | APIC_TIMER_INT_VEC | APIC_TIMER_TSCDLINE);
+	//do {
+	//	msr_write(IA32_TSCDEADLINE_MSR, 0xFFFFFFFFFFFFFFFF);
+	//} while (msr_read(IA32_TSCDEADLINE_MSR) == 0);
 }
 
 int apic_oneshot_read(struct apic_dev *apic)
@@ -412,7 +421,7 @@ apic_timer_setup (struct apic_dev * apic, uint32_t quantum)
 
 
 
-    /* set PIT channel 2 to "out" mode */
+    /* setPIT channel 2 to "out" mode */
     outb((inb(KB_CTRL_PORT_B) & 0xfd) | 0x1, 
           KB_CTRL_PORT_B);
 
@@ -447,8 +456,8 @@ apic_timer_setup (struct apic_dev * apic, uint32_t quantum)
     apic_write(apic, APIC_REG_LVTT, APIC_TIMER_DISABLE);
 
     /* TODO need to fixup when frequency is way off */
-    //busfreq = APIC_TIMER_DIV * NAUT_CONFIG_HZ*(0xffffffff - apic_read(apic, APIC_REG_TMCCT) + 1);
-    busfreq = 1100000000;
+    busfreq = APIC_TIMER_DIV * NAUT_CONFIG_HZ*(0xffffffff - apic_read(apic, APIC_REG_TMCCT) + 1);
+    // busfreq = 1100000000;
     APIC_DEBUG("Detected APIC 0x%x bus frequency as %u.%u MHz\n", apic->id, busfreq/1000000, busfreq%1000000);
     tmp = busfreq/(1000/quantum)/APIC_TIMER_DIV;
 

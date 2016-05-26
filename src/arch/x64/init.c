@@ -292,7 +292,8 @@ init (unsigned long mbd,
 	printk("BEGIN TESTING THE REAL-TIME SCHEDULER\n");
 	nk_rt_test();
 #endif
-    // printk("Nautilus boot thread yielding (indefinitely)\n");
+    printk("TSC DEADLINE MODE: %d\n", check_apic_tsc_deadline());
+    printk("Nautilus boot thread yielding (indefinitely)\n");
     /* we don't come back from this */
     idle(NULL, NULL);
 }

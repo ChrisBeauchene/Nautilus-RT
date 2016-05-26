@@ -219,17 +219,20 @@ apic_tsc_write( struct apic_dev *apic,
 		uint32_t reg,
 		uint64_t val)
 {
-	// printk("VALUE IN BASE IS : %llu\n", msr_read(MSR_GS_BASE));
+	printk("VALUE IN BASE IS : %llu\n", msr_read(MSR_GS_BASE));
 	// *((volatile uint64_t *)(reg)) = val;
 	msr_write(msr_read(MSR_GS_BASE) + reg, val);
 }
+
+uint8_t 
+check_apic_tsc_deadline (void);
 
 static inline uint64_t 
 apic_tsc_read( struct apic_dev *apic,
 		uint32_t reg)
 {
 	return msr_read(msr_read(MSR_GS_BASE) + reg);
-	// return *((volatile uint64_t *)(reg));
+	return *((volatile uint64_t *)(reg));
 }
 static inline uint64_t
 apic_read (struct apic_dev * apic, uint_t reg)

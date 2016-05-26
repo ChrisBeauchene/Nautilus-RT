@@ -290,6 +290,10 @@ buddy_free(
     ASSERT(mp);
     ASSERT(order <= mp->pool_order);
 
+    if (addr>=(void*)0xdf6a0000UL && addr<(void*)0x100000000UL) { 
+	return;
+    }
+
     /* Fixup requested order to be at least the minimum supported */
     if (order < mp->min_order)
         order = mp->min_order;
